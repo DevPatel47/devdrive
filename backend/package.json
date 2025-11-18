@@ -1,0 +1,44 @@
+{
+  "name": "devdrive-backend",
+  "version": "1.0.0",
+  "description": "Secure API server for the DevDrive personal cloud storage app",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "node --check index.js"
+  },
+  "keywords": [
+    "aws",
+    "s3",
+    "express",
+    "presigned",
+    "storage"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.932.0",
+    "@aws-sdk/s3-request-presigner": "^3.932.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
+    "mongoose": "^8.20.0",
+    "pino": "^9.4.0",
+    "pino-http": "^10.3.0",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "pino-pretty": "^11.2.2"
+  }
+}
