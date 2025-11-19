@@ -13,6 +13,19 @@ import {
 } from "../../../api/auth";
 import { setUnauthorizedHandler } from "../../../api/client";
 
+const getErrorMessage = (error, fallbackMessage) => {
+  const apiMessage =
+    typeof error?.response?.data?.error === "string"
+      ? error?.response?.data?.error
+      : error?.response?.data?.error?.message;
+  return (
+    apiMessage ||
+    error?.response?.data?.message ||
+    error?.message ||
+    fallbackMessage
+  );
+};
+
 const useAuthFlow = ({ onSessionReset } = {}) => {
   const {
     sessionState,
@@ -87,11 +100,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
           setSessionState("login");
         }
       } catch (error) {
-        const message =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Unable to verify credentials";
-        setAuthError(message);
+        setAuthError(getErrorMessage(error, "Unable to verify credentials"));
       } finally {
         setAuthLoading(false);
       }
@@ -139,12 +148,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
         setSessionState("register-email-otp");
         toast.success("We sent a verification code to your email");
       } catch (error) {
-        const message =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          error?.message ||
-          "Unable to start registration";
-        setAuthError(message);
+        setAuthError(getErrorMessage(error, "Unable to start registration"));
       } finally {
         setAuthLoading(false);
       }
@@ -178,11 +182,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
         setSessionState("register-mfa");
         toast.success("Email verified. Scan the QR code to finish setup.");
       } catch (error) {
-        const message =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Invalid verification code";
-        setAuthError(message);
+        setAuthError(getErrorMessage(error, "Invalid verification code"));
       } finally {
         setAuthLoading(false);
       }
@@ -222,10 +222,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
       );
       toast.success("We sent a new verification code");
     } catch (error) {
-      const message =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        "Unable to resend verification code";
+      const message = getErrorMessage(
+        error,
+        "Unable to resend verification code"
+      );
       setAuthError(message);
       toast.error(message);
     } finally {
@@ -264,11 +264,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
         setSessionState("ready");
         toast.success("Account created! You're signed in.");
       } catch (error) {
-        const message =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Unable to verify code";
-        setAuthError(message);
+        setAuthError(getErrorMessage(error, "Unable to verify code"));
       } finally {
         setAuthLoading(false);
       }
@@ -293,11 +289,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
         setSessionState("ready");
         toast.success("Signed in successfully");
       } catch (error) {
-        const message =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Invalid authentication code";
-        setAuthError(message);
+        setAuthError(getErrorMessage(error, "Invalid authentication code"));
       } finally {
         setAuthLoading(false);
       }
