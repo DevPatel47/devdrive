@@ -32,7 +32,7 @@ const AuthExperience = ({
   onCloseHowItWorks,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-neutral-50 dark:bg-brand-900">
       <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-8 px-4 py-12 text-center">
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-brand-600">

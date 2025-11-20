@@ -37,18 +37,18 @@ const ActionModal = ({ modal, onChange, onClose, onSubmit }) => {
   }[modal.type];
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 p-4">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-brand-950/80 p-4">
       <div className="glass-card w-full max-w-lg rounded-3xl p-6">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-neutral-50">
           {content.title}
         </h3>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-slate-600 dark:text-neutral-300">
           {content.description}
         </p>
         {hasInput && (
           <input
             autoFocus
-            className="mt-4 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-900"
+            className="mt-4 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-brand-700 dark:bg-brand-900"
             value={modal.value}
             placeholder={content.placeholder}
             onChange={(event) => onChange(event.target.value)}

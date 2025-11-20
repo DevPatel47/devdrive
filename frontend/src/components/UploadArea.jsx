@@ -22,10 +22,10 @@ const UploadArea = ({ onFilesSelected, uploads = [] }) => {
   return (
     <section
       className={clsx(
-        "rounded-3xl border-2 border-dashed p-6 transition",
+        "rounded-3xl border-2 border-dashed bg-neutral-50 p-6 transition dark:bg-brand-900/60",
         isDragging
-          ? "border-brand-400 bg-brand-50/40 dark:border-brand-400/60 dark:bg-brand-500/5"
-          : "border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-900/60"
+          ? "border-brand-500"
+          : "border-neutral-200 dark:border-brand-700"
       )}
       onDragOver={(event) => {
         event.preventDefault();
@@ -34,13 +34,13 @@ const UploadArea = ({ onFilesSelected, uploads = [] }) => {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
     >
-      <div className="flex flex-col gap-4 rounded-2xl bg-white/80 p-6 text-center shadow-lg dark:bg-slate-900/60">
+      <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 text-center shadow-sm dark:bg-brand-900/70">
         <FiUploadCloud className="mx-auto h-12 w-12 text-brand-500" />
         <div>
-          <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <p className="text-lg font-semibold text-slate-900 dark:text-neutral-50">
             Upload files
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-600">
             Drag & drop or use the quick actions below.
           </p>
         </div>
@@ -89,10 +89,10 @@ const UploadArea = ({ onFilesSelected, uploads = [] }) => {
           {uploads.map((upload) => (
             <div
               key={upload.id}
-              className="rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
+              className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-brand-800 dark:bg-brand-900/60"
             >
-              <div className="flex items-center justify-between text-sm text-slate-500">
-                <p className="font-medium text-slate-800 dark:text-slate-100">
+              <div className="flex items-center justify-between text-sm text-slate-600">
+                <p className="font-medium text-slate-900 dark:text-neutral-50">
                   {upload.name}
                 </p>
                 <span>
@@ -103,7 +103,7 @@ const UploadArea = ({ onFilesSelected, uploads = [] }) => {
                     : `${Math.round(upload.progress)}%`}
                 </span>
               </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-200 dark:bg-brand-800/80">
                 <div
                   className={clsx(
                     "h-full rounded-full",
@@ -116,7 +116,7 @@ const UploadArea = ({ onFilesSelected, uploads = [] }) => {
                   style={{ width: `${upload.progress}%` }}
                 />
               </div>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-600">
                 {formatBytes(upload.bytesUploaded)} /{" "}
                 {formatBytes(upload.totalBytes)}
               </p>

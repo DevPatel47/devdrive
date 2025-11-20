@@ -82,26 +82,26 @@ const FileExplorer = ({
   };
 
   return (
-    <section className="relative flex-1 rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-lg backdrop-blur dark:border-slate-800 dark:bg-slate-900/60">
+    <section className="relative flex-1 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-brand-800 dark:bg-brand-900/80">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-neutral-50">
           My Cloud Workspace
         </h2>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="group relative flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 dark:border-slate-700">
-            <FiSearch className="text-slate-400" />
+          <div className="group relative flex items-center gap-2 rounded-full border border-neutral-200 px-4 py-2 dark:border-brand-700">
+            <FiSearch className="text-slate-500" />
             <input
               type="search"
               placeholder="Search files"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              className="w-40 bg-transparent text-sm outline-none placeholder:text-slate-400"
+              className="w-40 bg-transparent text-sm outline-none placeholder:text-slate-500"
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm("")}
-                className="rounded-full bg-slate-100 p-1 text-slate-500 hover:text-brand-600 dark:bg-slate-800"
+                className="rounded-full bg-neutral-100 p-1 text-slate-600 hover:text-brand-700 dark:bg-brand-800"
               >
                 <FiSlash className="h-4 w-4" />
               </button>
@@ -110,20 +110,20 @@ const FileExplorer = ({
           <select
             value={sortOption}
             onChange={(event) => onSortChange(event.target.value)}
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+            className="rounded-full border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm dark:border-brand-700 dark:bg-brand-900"
           >
             <option value="name">Name · A → Z</option>
             <option value="recent">Recently updated</option>
             <option value="size">Size · Largest</option>
           </select>
-          <div className="flex items-center gap-2 rounded-full border border-slate-200 p-1 dark:border-slate-700">
+          <div className="flex items-center gap-2 rounded-full border border-neutral-200 p-1 dark:border-brand-700">
             <button
               type="button"
               className={clsx(
                 "rounded-full px-4 py-2 text-sm font-semibold transition",
                 viewMode === "grid"
-                  ? "bg-brand-600 text-white shadow"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  ? "bg-brand-700 text-white shadow"
+                  : "text-slate-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-brand-800"
               )}
               onClick={() => onViewModeChange("grid")}
             >
@@ -136,8 +136,8 @@ const FileExplorer = ({
               className={clsx(
                 "rounded-full px-4 py-2 text-sm font-semibold transition",
                 viewMode === "list"
-                  ? "bg-brand-600 text-white shadow"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  ? "bg-brand-700 text-white shadow"
+                  : "text-slate-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-brand-800"
               )}
               onClick={() => onViewModeChange("list")}
             >
@@ -155,7 +155,7 @@ const FileExplorer = ({
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className="h-32 animate-pulse rounded-2xl border border-slate-200 bg-slate-100/70 dark:border-slate-800 dark:bg-slate-800/60"
+                className="h-32 animate-pulse rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-brand-800 dark:bg-brand-800/60"
               />
             ))}
           </div>
@@ -192,7 +192,7 @@ const FileExplorer = ({
             </div>
           )
         ) : (
-          <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 text-center text-slate-500 dark:border-slate-700">
+          <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-300 text-center text-slate-600 dark:border-brand-700 dark:text-neutral-200">
             <p className="font-medium">No files here yet</p>
             <p className="text-sm">
               Upload files or create a new folder to get started.
@@ -210,7 +210,7 @@ const FileExplorer = ({
             onClick={closeContextMenu}
           />
           <div
-            className="fixed z-40 min-w-[180px] rounded-xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+            className="fixed z-40 min-w-[180px] rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-brand-700 dark:bg-brand-900"
             style={{ top: contextMenu.y, left: contextMenu.x }}
           >
             {menuItems.map((menuItem) => {
@@ -223,7 +223,7 @@ const FileExplorer = ({
                     onAction(menuItem.key, contextMenu.item);
                     closeContextMenu();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-neutral-100 dark:text-neutral-100 dark:hover:bg-brand-800"
                 >
                   <menuItem.icon className="h-4 w-4" />
                   {menuItem.label}

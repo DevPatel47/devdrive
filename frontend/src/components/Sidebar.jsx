@@ -29,7 +29,7 @@ const SidebarContent = ({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-sm font-medium text-slate-500">Quick actions</p>
+        <p className="text-sm font-medium text-slate-600">Quick actions</p>
         <div className="mt-4 space-y-2">
           <button
             type="button"
@@ -65,31 +65,31 @@ const SidebarContent = ({
       </div>
 
       <div>
-        <p className="text-sm font-medium text-slate-500">Storage usage</p>
-        <div className="mt-4 space-y-3 text-sm text-slate-500 dark:text-slate-300">
-          <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 dark:border-slate-700 dark:bg-slate-900/50">
-            <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        <p className="text-sm font-medium text-slate-600">Storage usage</p>
+        <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-neutral-200">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-brand-800 dark:bg-brand-900/60">
+            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-neutral-400">
               Total account
             </p>
-            <span className="mt-1 block font-semibold text-slate-800 dark:text-slate-100">
+            <span className="mt-1 block font-semibold text-slate-900 dark:text-neutral-50">
               {accountStorageLoading
                 ? "Calculating..."
                 : `${formatBytes(accountStorageUsed)} used`}
             </span>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
               Combined usage across all folders. {limitLabel}.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 dark:border-slate-700 dark:bg-slate-900/50">
-            <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-brand-800 dark:bg-brand-900/60">
+            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-neutral-400">
               This folder
             </p>
-            <span className="mt-1 block font-semibold text-slate-800 dark:text-slate-100">
+            <span className="mt-1 block font-semibold text-slate-900 dark:text-neutral-50">
               {storageLoading
                 ? "Calculating..."
                 : `${formatBytes(storageUsed)} stored`}
             </span>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
               Includes everything in this location and subfolders.
             </p>
           </div>
@@ -97,10 +97,10 @@ const SidebarContent = ({
       </div>
 
       <div>
-        <p className="text-sm font-medium text-slate-500">Appearance</p>
+        <p className="text-sm font-medium text-slate-600">Appearance</p>
         <button
           type="button"
-          className="mt-4 flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          className="mt-4 flex w-full items-center justify-between rounded-2xl border border-neutral-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-neutral-100 dark:border-brand-700 dark:text-neutral-50 dark:hover:bg-brand-800/70"
           onClick={onToggleTheme}
         >
           <span>
@@ -114,7 +114,7 @@ const SidebarContent = ({
 };
 
 const Sidebar = (props) => (
-  <aside className="hidden w-full max-w-xs flex-col gap-6 rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-slate-800 dark:bg-slate-900/60 lg:flex">
+  <aside className="hidden w-full max-w-xs flex-col gap-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-brand-800 dark:bg-brand-900/80 lg:flex">
     <SidebarContent {...props} />
   </aside>
 );
@@ -129,7 +129,7 @@ export const MobileSidebarDrawer = ({ open, onClose, ...props }) => {
     >
       <div
         className={clsx(
-          "absolute inset-0 bg-slate-950/70 transition-opacity",
+          "absolute inset-0 bg-brand-950/80 transition-opacity",
           open ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
@@ -140,7 +140,7 @@ export const MobileSidebarDrawer = ({ open, onClose, ...props }) => {
           open ? "translate-y-0 opacity-100" : "-translate-y-6 opacity-0"
         )}
       >
-        <div className="rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-2xl backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+        <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-xl dark:border-brand-800 dark:bg-brand-900/80">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
@@ -153,7 +153,7 @@ export const MobileSidebarDrawer = ({ open, onClose, ...props }) => {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-transparent p-2 text-slate-500 hover:border-slate-200 hover:bg-white dark:hover:border-slate-700 dark:hover:bg-slate-800"
+              className="rounded-full border border-transparent p-2 text-slate-500 hover:border-neutral-200 hover:bg-neutral-100 dark:hover:border-brand-700 dark:hover:bg-brand-800"
               aria-label="Close controls"
             >
               <FiX className="h-5 w-5" />

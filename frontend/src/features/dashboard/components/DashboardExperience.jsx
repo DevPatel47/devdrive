@@ -27,17 +27,17 @@ const DashboardExperience = ({
   howItWorksModalProps,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-neutral-50 dark:bg-brand-900">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 lg:flex-row">
         <Sidebar {...sidebarProps} />
         <main className="flex flex-1 flex-col gap-6">
-          <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-lg backdrop-blur dark:border-slate-800 dark:bg-slate-900/60">
+          <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-brand-800 dark:bg-brand-900/80">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
                   DevDrive
                 </p>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-neutral-50">
                   Secure Cloud Storage Platform
                 </h1>
               </div>
