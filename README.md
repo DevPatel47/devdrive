@@ -74,30 +74,30 @@ If you leave approvals enabled (the default), new accounts stay in a **pending**
 
 Create `backend/.env` with:
 
-| Name                        | Description                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| `MONGODB_URI`               | MongoDB connection string (local `mongodb://localhost:27017/devdrive` or Atlas URI). |
-| `PORT`                      | Express port (default `5000`).                                                       |
-| `SESSION_SECRET`            | Random 32+ character secret for JWT/cookie signing.                                  |
-| `AWS_REGION`                | AWS region of your S3 bucket (e.g., `ca-central-1`).                                 |
-| `AWS_ACCESS_KEY_ID`         | IAM access key **with limited S3 policy**.                                           |
-| `AWS_SECRET_ACCESS_KEY`     | Matching secret key.                                                                 |
-| `S3_BUCKET`                 | **Private** bucket name dedicated to DevDrive.                                       |
-| `FRONTEND_ORIGIN`           | Allowed origin for CORS, e.g., `http://localhost:5173`.                              |
-| `ADMIN_AUTO_APPROVE_USERS`  | (Optional) Comma-separated usernames that should auto-provision as approved admins.  |
-| `ADMIN_NOTIFICATION_EMAILS` | (Optional) Comma-separated emails to notify when a new user needs approval.          |
-| `MAX_UPLOAD_BYTES`          | (Optional) Max upload size in bytes (default 100 MB).                                |
-| `DEFAULT_USER_QUOTA_BYTES`  | (Optional) Default per-user quota in bytes (default 50 GiB).                         |
-| `SESSION_ACCESS_TTL`        | (Optional) Access-token lifetime in seconds (default 86400 / 24 hours).              |
-| `SESSION_REFRESH_TTL`       | (Optional) Refresh-token lifetime in seconds (default 604800 / 7 days).              |
-| `HTTPS_ONLY_COOKIES`        | (Optional) Set to `true` to force `Secure` cookies outside production.               |
-| `AUTH_ISSUER_NAME`          | (Optional) Label that appears in authenticator apps (default `DevDrive`).            |
-| `MAIL_SMTP_HOST`            | (Optional) SMTP host for outbound email notifications.                               |
-| `MAIL_SMTP_PORT`            | (Optional) SMTP port (default `587`).                                                |
-| `MAIL_SMTP_SECURE`          | (Optional) Set to `true` to enforce TLS from the start (default STARTTLS).           |
-| `MAIL_SMTP_USER`            | (Optional) SMTP auth username.                                                       |
-| `MAIL_SMTP_PASS`            | (Optional) SMTP auth password.                                                       |
-| `MAIL_FROM`                 | (Optional) From address; defaults to `MAIL_SMTP_USER`.                               |
+| Name                        | Description                                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `MONGODB_URI`               | MongoDB connection string (local `mongodb://localhost:27017/devdrive` or Atlas URI).                             |
+| `PORT`                      | Express port (default `5000`).                                                                                   |
+| `SESSION_SECRET`            | Random 32+ character secret for JWT/cookie signing.                                                              |
+| `AWS_REGION`                | AWS region of your S3 bucket (e.g., `ca-central-1`).                                                             |
+| `AWS_ACCESS_KEY_ID`         | IAM access key **with limited S3 policy**.                                                                       |
+| `AWS_SECRET_ACCESS_KEY`     | Matching secret key.                                                                                             |
+| `S3_BUCKET`                 | **Private** bucket name dedicated to DevDrive.                                                                   |
+| `FRONTEND_ORIGIN`           | Allowed origin for CORS, e.g., `http://localhost:5173`.                                                          |
+| `ADMIN_AUTO_APPROVE_USERS`  | (Optional) Comma-separated usernames that should auto-provision as approved admins.                              |
+| `ADMIN_NOTIFICATION_EMAILS` | (Optional) Comma-separated emails to notify when a new user needs approval.                                      |
+| `MAX_UPLOAD_BYTES`          | (Optional) Max upload size in bytes (default 100 MB).                                                            |
+| `DEFAULT_USER_QUOTA_BYTES`  | (Optional) Default per-user quota in bytes (default 50 GiB).                                                     |
+| `SESSION_ACCESS_TTL`        | (Optional) Access-token lifetime in seconds (default 86400 / 24 hours).                                          |
+| `SESSION_REFRESH_TTL`       | (Optional) Refresh-token lifetime in seconds (default 604800 / 7 days).                                          |
+| `HTTPS_ONLY_COOKIES`        | (Optional) Set to `true` to force `Secure` cookies outside production.                                           |
+| `AUTH_ISSUER_NAME`          | (Optional) Label that appears in authenticator apps (default `DevDrive`).                                        |
+| `MAIL_SMTP_HOST`            | (Optional) SMTP host for outbound email notifications.                                                           |
+| `MAIL_SMTP_PORT`            | (Optional) SMTP port (default `587`).                                                                            |
+| `MAIL_SMTP_SECURE`          | (Optional) Set to `true` to enforce TLS from the start (defaults to `true` when port `465`, otherwise STARTTLS). |
+| `MAIL_SMTP_USER`            | (Optional) SMTP auth username.                                                                                   |
+| `MAIL_SMTP_PASS`            | (Optional) SMTP auth password.                                                                                   |
+| `MAIL_FROM`                 | (Optional) From address; defaults to `MAIL_SMTP_USER`.                                                           |
 
 > Never commit real credentials. Keep `.env` files local only.
 

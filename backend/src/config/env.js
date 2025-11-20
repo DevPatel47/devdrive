@@ -50,6 +50,13 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
+const inferMailSecure = () => {
+  if (typeof env.MAIL_SMTP_SECURE === "string") {
+    return env.MAIL_SMTP_SECURE === "true";
+  }
+  return env.MAIL_SMTP_PORT === 465;
+};
+
 const config = {
   env: env.NODE_ENV,
   port: env.PORT,
@@ -90,7 +97,7 @@ const config = {
     user: env.MAIL_SMTP_USER,
     pass: env.MAIL_SMTP_PASS,
     from: env.MAIL_FROM || env.MAIL_SMTP_USER,
-    secure: env.MAIL_SMTP_SECURE === "true",
+    secure: inferMailSecure(),
     enabled:
       Boolean(env.MAIL_SMTP_HOST) &&
       Boolean(env.MAIL_SMTP_USER) &&
