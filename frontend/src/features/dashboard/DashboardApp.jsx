@@ -1,18 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { FiShield, FiSliders } from "react-icons/fi";
-import Breadcrumbs from "../../components/Breadcrumbs";
-import FileExplorer from "../../components/FileExplorer";
-import UploadArea from "../../components/UploadArea";
-import PreviewModal from "../../components/PreviewModal";
-import Sidebar, { MobileSidebarDrawer } from "../../components/Sidebar";
-import AdminPanel from "../../components/AdminPanel";
-import LoginCard from "../../components/LoginCard";
-import RegisterCard from "../../components/RegisterCard";
-import RegisterEmailOtpCard from "../../components/RegisterEmailOtpCard";
-import RegisterMfaCard from "../../components/RegisterMfaCard";
-import MfaCard from "../../components/MfaCard";
+import AuthExperience from "./components/AuthExperience";
+import DashboardExperience from "./components/DashboardExperience";
 import {
   createFolder,
   deleteObject,
@@ -31,115 +21,13 @@ import {
 import { getFileType } from "../../utils/formatters";
 import useAuthFlow from "../auth/hooks/useAuthFlow.js";
 import useSession from "../../app/hooks/useSession.js";
+import useDashboardTheme from "./hooks/useDashboardTheme";
+import { safeName, createId } from "./utils/objectUtils";
 
-const safeName = (name = "") => {
-  const segments = name
-    .split(/[\\/]+/)
-    .filter((segment) => segment && segment !== "..")
-    .map((segment, index) => {
-      const cleaned = segment.replace(/[^a-zA-Z0-9._-]/g, "-");
-      return cleaned || `untitled-${index + 1}`;
-    });
-  if (!segments.length) return `untitled-${Date.now()}`;
-  return segments.join("/");
-};
-
-const createId = () => {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
-
-const useDarkMode = () => {
-  const prefersDark =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      localStorage.getItem("dd-theme")?.toLowerCase() === "dark" || prefersDark
-    );
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", isDarkMode);
-    document.body.classList.toggle("dark", isDarkMode);
-    localStorage.setItem("dd-theme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
-
-  return [isDarkMode, setIsDarkMode];
-};
-
-const ActionModal = ({ modal, onChange, onClose, onSubmit }) => {
-  if (!modal) return null;
-  const hasInput = ["rename", "move", "create-folder"].includes(modal.type);
-
-  const content = {
-    rename: {
-      title: "Rename item",
-      description:
-        "Choose a new name. Avoid using slashes or special system characters.",
-      placeholder: "New name",
-      confirmLabel: "Rename",
-    },
-    move: {
-      title: "Move item",
-      description:
-        "Provide the destination prefix (e.g. marketing/q4/). Leave empty for root.",
-      placeholder: "Destination prefix",
-      confirmLabel: "Move",
-    },
-    "create-folder": {
-      title: "Create folder",
-      description:
-        "Enter a folder name. It will be created inside the current location.",
-      placeholder: "Folder name",
-      confirmLabel: "Create folder",
-    },
-    delete: {
-      title: "Delete item",
-      description:
-        "This action permanently removes the selected file or folder.",
-      confirmLabel: "Delete",
-    },
-  }[modal.type];
-
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 p-4">
-      <div className="glass-card w-full max-w-lg rounded-3xl p-6">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-          {content.title}
-        </h3>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {content.description}
-        </p>
-        {hasInput && (
-          <input
-            autoFocus
-            className="mt-4 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-900"
-            value={modal.value}
-            placeholder={content.placeholder}
-            onChange={(event) => onChange(event.target.value)}
-          />
-        )}
-        <div className="mt-6 flex justify-end gap-3">
-          <button type="button" className="button-secondary" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="button-primary" onClick={onSubmit}>
-            {content.confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+/**
+ * High-level container that wires auth state, storage tooling, and admin flows
+ * into presentational components so the UI remains showcase-ready.
+ */
 const DashboardApp = () => {
   const {
     sessionState,
@@ -164,7 +52,7 @@ const DashboardApp = () => {
   const [uploads, setUploads] = useState([]);
   const [preview, setPreview] = useState(null);
   const [modal, setModal] = useState(null);
-  const [isDarkMode, setIsDarkMode] = useDarkMode();
+  const [isDarkMode, setIsDarkMode] = useDashboardTheme();
   const [refreshTick, setRefreshTick] = useState(0);
   const [folderUsage, setFolderUsage] = useState({
     totalBytes: 0,
@@ -179,6 +67,12 @@ const DashboardApp = () => {
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminData, setAdminData] = useState({ pending: [], approved: [] });
+  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
+
+  const toggleTheme = useCallback(
+    () => setIsDarkMode((prev) => !prev),
+    [setIsDarkMode]
+  );
 
   const resetSession = useCallback(
     ({ notify = false, message } = {}) => {
@@ -206,6 +100,10 @@ const DashboardApp = () => {
   const requestUsageRefresh = useCallback(() => {
     setUsageRefreshTick((tick) => tick + 1);
   }, []);
+
+  const openHowItWorks = useCallback(() => setHowItWorksOpen(true), []);
+  const closeHowItWorks = useCallback(() => setHowItWorksOpen(false), []);
+
   const {
     handleLoginSubmit,
     handleRegisterSubmit,
@@ -526,6 +424,16 @@ const DashboardApp = () => {
     if (action === "delete") return setModal({ type: "delete", item });
   };
 
+  const handleOpenItem = (item) => {
+    if (item.type === "folder") {
+      setCurrentPrefix(item.key);
+      resetSelection();
+      return;
+    }
+
+    openPreview(item);
+  };
+
   const submitModal = async () => {
     if (!modal) return;
     try {
@@ -570,246 +478,151 @@ const DashboardApp = () => {
   const triggerUploadClick = () =>
     document.getElementById("file-upload")?.click();
   const closeControls = useCallback(() => setControlsOpen(false), []);
+  const openControls = useCallback(() => setControlsOpen(true), []);
 
   if (sessionState !== "ready") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-8 px-4 py-12 text-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-brand-600">
-              DevDrive
-            </p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Personal Cloud Storage
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Secure multi-user access with MFA-protected sessions.
-            </p>
-          </div>
-
-          {sessionState === "checking" && (
-            <div className="glass-card w-full max-w-md rounded-3xl p-8 text-slate-500">
-              Checking your session...
-            </div>
-          )}
-
-          {sessionState === "login" && (
-            <LoginCard
-              onSubmit={handleLoginSubmit}
-              loading={authLoading}
-              error={authError}
-              onSwitchToRegister={handleSwitchToRegister}
-            />
-          )}
-
-          {sessionState === "register" && (
-            <RegisterCard
-              onSubmit={handleRegisterSubmit}
-              loading={authLoading}
-              error={authError}
-              onSwitchToLogin={handleSwitchToLogin}
-            />
-          )}
-
-          {sessionState === "register-email-otp" && registrationContext && (
-            <RegisterEmailOtpCard
-              email={registrationContext.email}
-              onSubmit={handleEmailOtpSubmit}
-              onBack={handleSwitchToRegister}
-              onResend={handleResendEmailOtp}
-              resendLoading={resendLoading}
-              resendAvailableAt={registrationContext.resendAvailableAt}
-              codeExpiresAt={registrationContext.codeExpiresAt}
-              loading={authLoading}
-              error={authError}
-            />
-          )}
-
-          {sessionState === "register-mfa" && registrationContext && (
-            <RegisterMfaCard
-              context={registrationContext}
-              onSubmit={handleRegisterVerify}
-              onBack={handleSwitchToRegister}
-              loading={authLoading}
-              error={authError}
-            />
-          )}
-
-          {sessionState === "mfa" && (
-            <MfaCard
-              onSubmit={handleMfaSubmit}
-              onBack={handleMfaBack}
-              loading={authLoading}
-              error={authError}
-            />
-          )}
-
-          {sessionState === "pending-approval" && (
-            <div className="glass-card w-full max-w-md rounded-3xl p-8 text-left">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                Awaiting approval
-              </h2>
-              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                {sessionUser?.username
-                  ? `${sessionUser.username} is pending admin approval. We'll email you once it's ready.`
-                  : "Your account is pending admin approval. We'll notify you once it's ready."}
-              </p>
-              <div className="mt-6 flex gap-3">
-                <button
-                  type="button"
-                  className="button-secondary flex-1"
-                  onClick={handleSwitchToLogin}
-                >
-                  Back to login
-                </button>
-                <button
-                  type="button"
-                  className="button-secondary flex-1"
-                  onClick={() =>
-                    toast.success("We'll notify you when approved")
-                  }
-                >
-                  Got it
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+      <>
+        <AuthExperience
+          sessionState={sessionState}
+          sessionUser={sessionUser}
+          authLoading={authLoading}
+          authError={authError}
+          resendLoading={resendLoading}
+          registrationContext={registrationContext}
+          onLoginSubmit={handleLoginSubmit}
+          onRegisterSubmit={handleRegisterSubmit}
+          onEmailOtpSubmit={handleEmailOtpSubmit}
+          onResendEmailOtp={handleResendEmailOtp}
+          onRegisterVerify={handleRegisterVerify}
+          onMfaSubmit={handleMfaSubmit}
+          onMfaBack={handleMfaBack}
+          onSwitchToRegister={handleSwitchToRegister}
+          onSwitchToLogin={handleSwitchToLogin}
+          howItWorksOpen={howItWorksOpen}
+          onOpenHowItWorks={openHowItWorks}
+          onCloseHowItWorks={closeHowItWorks}
+        />
         <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
-      </div>
+      </>
     );
   }
 
+  const sidebarProps = {
+    onCreateFolder: openFolderModal,
+    onUploadClick: triggerUploadClick,
+    onRefresh: healthRefresh,
+    onLogout: handleLogout,
+    storageUsed: folderUsage.totalBytes,
+    storageLoading: folderUsage.loading,
+    storageLimit: storageLimitBytes,
+    accountStorageUsed: accountUsage.totalBytes,
+    accountStorageLoading: accountUsage.loading,
+    isDarkMode,
+    onToggleTheme: toggleTheme,
+  };
+
+  const headerProps = {
+    breadcrumbs: {
+      prefix: currentPrefix,
+      onNavigate: handleNavigate,
+    },
+    isAdmin,
+    onOpenAdminPanel: () => setAdminPanelOpen(true),
+    onOpenControls: openControls,
+  };
+
+  const uploadAreaProps = {
+    onFilesSelected: handleFilesSelected,
+    uploads,
+  };
+
+  const fileExplorerProps = {
+    items: combinedItems,
+    loading,
+    viewMode,
+    onViewModeChange: setViewMode,
+    sortOption,
+    onSortChange: setSortOption,
+    selected: selectedItem,
+    onSelect: (item) => setSelectedItem(item),
+    onOpen: handleOpenItem,
+    onAction: handleAction,
+  };
+
+  const previewModalProps = {
+    preview,
+    onClose: () => setPreview(null),
+    onDownload: handleDownload,
+  };
+
+  const actionModalProps = {
+    modal,
+    onChange: (value) => setModal((prev) => ({ ...prev, value })),
+    onClose: () => setModal(null),
+    onSubmit: submitModal,
+  };
+
+  const mobileDrawerProps = {
+    open: controlsOpen,
+    onClose: closeControls,
+    onCreateFolder: () => {
+      openFolderModal();
+      closeControls();
+    },
+    onUploadClick: () => {
+      triggerUploadClick();
+      closeControls();
+    },
+    onRefresh: () => {
+      healthRefresh();
+      closeControls();
+    },
+    onLogout: () => {
+      handleLogout();
+      closeControls();
+    },
+    storageUsed: folderUsage.totalBytes,
+    storageLoading: folderUsage.loading,
+    storageLimit: storageLimitBytes,
+    accountStorageUsed: accountUsage.totalBytes,
+    accountStorageLoading: accountUsage.loading,
+    isDarkMode,
+    onToggleTheme: toggleTheme,
+  };
+
+  const adminPanelProps = {
+    open: adminPanelOpen,
+    onClose: () => setAdminPanelOpen(false),
+    pendingUsers: adminData.pending,
+    approvedUsers: adminData.approved,
+    loading: adminLoading,
+    onRefresh: loadAdminUsers,
+    onApprove: handleApproveUser,
+    onQuotaUpdate: handleQuotaUpdate,
+  };
+
+  const howItWorksModalProps = {
+    open: howItWorksOpen,
+    onClose: closeHowItWorks,
+  };
+
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950`}
-    >
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 lg:flex-row">
-        <Sidebar
-          onCreateFolder={openFolderModal}
-          onUploadClick={() => document.getElementById("file-upload")?.click()}
-          onRefresh={healthRefresh}
-          onLogout={handleLogout}
-          storageUsed={folderUsage.totalBytes}
-          storageLoading={folderUsage.loading}
-          storageLimit={storageLimitBytes}
-          accountStorageUsed={accountUsage.totalBytes}
-          accountStorageLoading={accountUsage.loading}
-          isDarkMode={isDarkMode}
-          onToggleTheme={() => setIsDarkMode((prev) => !prev)}
-        />
-        <main className="flex flex-1 flex-col gap-6">
-          <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-lg backdrop-blur dark:border-slate-800 dark:bg-slate-900/60">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
-                  DevDrive
-                </p>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                  Personal Cloud Storage
-                </h1>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:justify-end">
-                <Breadcrumbs
-                  prefix={currentPrefix}
-                  onNavigate={handleNavigate}
-                />
-                {isAdmin && (
-                  <button
-                    type="button"
-                    className="button-secondary"
-                    onClick={() => setAdminPanelOpen(true)}
-                  >
-                    <FiShield /> Admin
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="button-secondary lg:hidden"
-                  onClick={() => setControlsOpen(true)}
-                >
-                  <FiSliders /> Controls
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <UploadArea onFilesSelected={handleFilesSelected} uploads={uploads} />
-
-          <FileExplorer
-            items={combinedItems}
-            loading={loading}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            sortOption={sortOption}
-            onSortChange={setSortOption}
-            selected={selectedItem}
-            onSelect={(item) => setSelectedItem(item)}
-            onOpen={(item) => {
-              if (item.type === "folder") {
-                setCurrentPrefix(item.key);
-                resetSelection();
-              } else {
-                openPreview(item);
-              }
-            }}
-            onAction={handleAction}
-          />
-        </main>
-      </div>
-
-      <PreviewModal
-        preview={preview}
-        onClose={() => setPreview(null)}
-        onDownload={handleDownload}
+    <>
+      <DashboardExperience
+        sidebarProps={sidebarProps}
+        headerProps={headerProps}
+        uploadAreaProps={uploadAreaProps}
+        fileExplorerProps={fileExplorerProps}
+        previewModalProps={previewModalProps}
+        actionModalProps={actionModalProps}
+        mobileDrawerProps={mobileDrawerProps}
+        adminPanelProps={adminPanelProps}
+        showAdminPanel={isAdmin}
+        howItWorksModalProps={howItWorksModalProps}
       />
-      <ActionModal
-        modal={modal}
-        onChange={(value) => setModal((prev) => ({ ...prev, value }))}
-        onClose={() => setModal(null)}
-        onSubmit={submitModal}
-      />
-      <MobileSidebarDrawer
-        open={controlsOpen}
-        onClose={closeControls}
-        onCreateFolder={() => {
-          openFolderModal();
-          closeControls();
-        }}
-        onUploadClick={() => {
-          triggerUploadClick();
-          closeControls();
-        }}
-        onRefresh={() => {
-          healthRefresh();
-          closeControls();
-        }}
-        onLogout={() => {
-          handleLogout();
-          closeControls();
-        }}
-        storageUsed={folderUsage.totalBytes}
-        storageLoading={folderUsage.loading}
-        storageLimit={storageLimitBytes}
-        accountStorageUsed={accountUsage.totalBytes}
-        accountStorageLoading={accountUsage.loading}
-        isDarkMode={isDarkMode}
-        onToggleTheme={() => setIsDarkMode((prev) => !prev)}
-      />
-      {isAdmin && (
-        <AdminPanel
-          open={adminPanelOpen}
-          onClose={() => setAdminPanelOpen(false)}
-          pendingUsers={adminData.pending}
-          approvedUsers={adminData.approved}
-          loading={adminLoading}
-          onRefresh={loadAdminUsers}
-          onApprove={handleApproveUser}
-          onQuotaUpdate={handleQuotaUpdate}
-        />
-      )}
       <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
-    </div>
+    </>
   );
 };
 

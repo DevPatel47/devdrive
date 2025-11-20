@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { FiLock } from "react-icons/fi";
 
-const LoginCard = ({ onSubmit, loading, error, onSwitchToRegister }) => {
+const LoginCard = ({
+  onSubmit,
+  loading,
+  error,
+  onSwitchToRegister,
+  onShowHowItWorks,
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -57,6 +63,16 @@ const LoginCard = ({ onSubmit, loading, error, onSwitchToRegister }) => {
         >
           {loading ? "Verifying..." : "Continue"}
         </button>
+        {onShowHowItWorks && (
+          <button
+            type="button"
+            className="button-secondary w-full"
+            onClick={onShowHowItWorks}
+            disabled={loading}
+          >
+            How DevDrive works
+          </button>
+        )}
       </div>
       {onSwitchToRegister && (
         <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">

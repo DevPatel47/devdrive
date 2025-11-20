@@ -1,6 +1,6 @@
 # DevDrive · Personal Cloud Storage
 
-DevDrive is a multi-user, full-stack cloud drive that stores files securely in a private AWS S3 bucket using pre-signed URLs only. The backend now manages user accounts in MongoDB, enforces MFA via TOTP, and scopes every file operation to a per-user S3 prefix, while the React + Vite frontend feels like a lightweight Google Drive.
+DevDrive is a secure cloud storage platform that stores files in a private AWS S3 bucket using pre-signed URLs only. The backend manages user accounts in MongoDB, enforces MFA via TOTP, and scopes every file operation to a per-user S3 prefix, while the React + Vite frontend delivers a polished drive-like experience.
 
 ---
 

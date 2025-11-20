@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { FiUserPlus } from "react-icons/fi";
 
-const RegisterCard = ({ onSubmit, loading, error, onSwitchToLogin }) => {
+const RegisterCard = ({
+  onSubmit,
+  loading,
+  error,
+  onSwitchToLogin,
+  onShowHowItWorks,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -96,6 +102,16 @@ const RegisterCard = ({ onSubmit, loading, error, onSwitchToLogin }) => {
         >
           {loading ? "Sending code..." : "Send verification code"}
         </button>
+        {onShowHowItWorks && (
+          <button
+            type="button"
+            className="button-secondary w-full"
+            onClick={onShowHowItWorks}
+            disabled={loading}
+          >
+            How DevDrive works
+          </button>
+        )}
         {onSwitchToLogin && (
           <button
             type="button"
