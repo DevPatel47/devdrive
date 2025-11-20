@@ -39,6 +39,10 @@ const envSchema = z.object({
   MAIL_SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   MAIL_SMTP_SECURE: z.string().optional(),
+  MAIL_SMTP_CONNECTION_TIMEOUT: z.coerce.number().optional(),
+  MAIL_SMTP_SOCKET_TIMEOUT: z.coerce.number().optional(),
+  MAIL_SMTP_GREETING_TIMEOUT: z.coerce.number().optional(),
+  MAIL_SMTP_DEBUG: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -98,6 +102,10 @@ const config = {
     pass: env.MAIL_SMTP_PASS,
     from: env.MAIL_FROM || env.MAIL_SMTP_USER,
     secure: inferMailSecure(),
+    connectionTimeout: env.MAIL_SMTP_CONNECTION_TIMEOUT ?? 10_000,
+    socketTimeout: env.MAIL_SMTP_SOCKET_TIMEOUT ?? 10_000,
+    greetingTimeout: env.MAIL_SMTP_GREETING_TIMEOUT ?? 10_000,
+    debug: env.MAIL_SMTP_DEBUG === "true",
     enabled:
       Boolean(env.MAIL_SMTP_HOST) &&
       Boolean(env.MAIL_SMTP_USER) &&

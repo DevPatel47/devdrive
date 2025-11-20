@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import config from "../config/env.js";
+import logger from "../config/logger.js";
 
 let transporter = null;
 
@@ -12,35 +13,52 @@ if (config.mail.enabled) {
       user: config.mail.user,
       pass: config.mail.pass,
     },
+    connectionTimeout: config.mail.connectionTimeout,
+    socketTimeout: config.mail.socketTimeout,
+    greetingTimeout: config.mail.greetingTimeout,
+    logger: config.mail.debug,
+    debug: config.mail.debug,
   });
+
+  transporter
+    .verify()
+    .then(() => {
+      logger.info({ host: config.mail.host }, "SMTP transport verified");
+    })
+    .catch((error) => {
+      logger.error(
+        { err: error, host: config.mail.host },
+        "SMTP transport verification failed"
+      );
+    });
 }
 
 const sendMail = async ({ to, subject, text, html }) => {
   if (!config.mail.enabled || !transporter) {
-    console.info(
-      "Email not sent because SMTP is not configured. Message intended for %s with subject %s.",
-      to,
-      subject
+    logger.info(
+      { to, subject },
+      "Email skipped because SMTP is not configured"
     );
     return false;
   }
 
   try {
-    await transporter.sendMail({
+    const start = Date.now();
+    const info = await transporter.sendMail({
       from: config.mail.from,
       to,
       subject,
       text,
       html,
     });
+    const durationMs = Date.now() - start;
+    logger.debug(
+      { to, subject, durationMs, messageId: info?.messageId },
+      "Email delivered via SMTP"
+    );
     return true;
   } catch (error) {
-    console.error(
-      "Failed to send email to %s with subject %s: %s",
-      to,
-      subject,
-      error.message
-    );
+    logger.error({ err: error, to, subject }, "Failed to send email via SMTP");
     return false;
   }
 };
@@ -66,9 +84,9 @@ export const notifyUserApproved = async ({ username, email }) => {
 
 export const sendEmailVerificationCode = async ({ username, email, code }) => {
   if (!email) {
-    console.warn(
-      "Cannot send email verification code without email for %s",
-      username
+    logger.warn(
+      { username },
+      "Cannot send email verification code without email"
     );
     return;
   }
@@ -81,10 +99,9 @@ export const sendEmailVerificationCode = async ({ username, email, code }) => {
     html: `<p>${text}</p>`,
   });
   if (!delivered) {
-    console.info(
-      "[DevDrive] Email verification code for %s is %s (logged because SMTP delivery is disabled or failed)",
-      username,
-      code
+    logger.info(
+      { username, code },
+      "Email verification code logged because SMTP delivery failed"
     );
   }
 };
