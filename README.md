@@ -74,38 +74,57 @@ If you leave approvals enabled (the default), new accounts stay in a **pending**
 
 Create `backend/.env` with:
 
-| Name                           | Description                                                                                                      |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `MONGODB_URI`                  | MongoDB connection string (local `mongodb://localhost:27017/devdrive` or Atlas URI).                             |
-| `PORT`                         | Express port (default `5000`).                                                                                   |
-| `SESSION_SECRET`               | Random 32+ character secret for JWT/cookie signing.                                                              |
-| `AWS_REGION`                   | AWS region of your S3 bucket (e.g., `ca-central-1`).                                                             |
-| `AWS_ACCESS_KEY_ID`            | IAM access key **with limited S3 policy**.                                                                       |
-| `AWS_SECRET_ACCESS_KEY`        | Matching secret key.                                                                                             |
-| `S3_BUCKET`                    | **Private** bucket name dedicated to DevDrive.                                                                   |
-| `FRONTEND_ORIGIN`              | Allowed origin for CORS, e.g., `http://localhost:5173`.                                                          |
-| `ADMIN_AUTO_APPROVE_USERS`     | (Optional) Comma-separated usernames that should auto-provision as approved admins.                              |
-| `ADMIN_NOTIFICATION_EMAILS`    | (Optional) Comma-separated emails to notify when a new user needs approval.                                      |
-| `MAX_UPLOAD_BYTES`             | (Optional) Max upload size in bytes (default 100 MB).                                                            |
-| `DEFAULT_USER_QUOTA_BYTES`     | (Optional) Default per-user quota in bytes (default 50 GiB).                                                     |
-| `SESSION_ACCESS_TTL`           | (Optional) Access-token lifetime in seconds (default 86400 / 24 hours).                                          |
-| `SESSION_REFRESH_TTL`          | (Optional) Refresh-token lifetime in seconds (default 604800 / 7 days).                                          |
-| `HTTPS_ONLY_COOKIES`           | (Optional) Set to `true` to force `Secure` cookies outside production.                                           |
-| `AUTH_ISSUER_NAME`             | (Optional) Label that appears in authenticator apps (default `DevDrive`).                                        |
-| `MAIL_SMTP_HOST`               | (Optional) SMTP host for outbound email notifications.                                                           |
-| `MAIL_SMTP_PORT`               | (Optional) SMTP port (default `587`).                                                                            |
-| `MAIL_SMTP_SECURE`             | (Optional) Set to `true` to enforce TLS from the start (defaults to `true` when port `465`, otherwise STARTTLS). |
-| `MAIL_SMTP_CONNECTION_TIMEOUT` | (Optional) SMTP connection timeout in ms (default `10000`).                                                      |
-| `MAIL_SMTP_SOCKET_TIMEOUT`     | (Optional) Socket inactivity timeout in ms (default `10000`).                                                    |
-| `MAIL_SMTP_GREETING_TIMEOUT`   | (Optional) SMTP greeting timeout in ms (default `10000`).                                                        |
-| `MAIL_SMTP_DEBUG`              | (Optional) Set to `true` to enable verbose Nodemailer logs.                                                      |
-| `MAIL_SMTP_USER`               | (Optional) SMTP auth username.                                                                                   |
-| `MAIL_SMTP_PASS`               | (Optional) SMTP auth password.                                                                                   |
-| `MAIL_FROM`                    | (Optional) From address; defaults to `MAIL_SMTP_USER`.                                                           |
+| Name                           | Description                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `MONGODB_URI`                  | MongoDB connection string (local `mongodb://localhost:27017/devdrive` or Atlas URI).                                     |
+| `PORT`                         | Express port (default `5000`).                                                                                           |
+| `SESSION_SECRET`               | Random 32+ character secret for JWT/cookie signing.                                                                      |
+| `AWS_REGION`                   | AWS region of your S3 bucket (e.g., `ca-central-1`).                                                                     |
+| `AWS_ACCESS_KEY_ID`            | IAM access key **with limited S3 policy**.                                                                               |
+| `AWS_SECRET_ACCESS_KEY`        | Matching secret key.                                                                                                     |
+| `S3_BUCKET`                    | **Private** bucket name dedicated to DevDrive.                                                                           |
+| `FRONTEND_ORIGIN`              | Allowed origin for CORS, e.g., `http://localhost:5173`.                                                                  |
+| `ADMIN_AUTO_APPROVE_USERS`     | (Optional) Comma-separated usernames that should auto-provision as approved admins.                                      |
+| `ADMIN_NOTIFICATION_EMAILS`    | (Optional) Comma-separated emails to notify when a new user needs approval.                                              |
+| `MAX_UPLOAD_BYTES`             | (Optional) Max upload size in bytes (default 100 MB).                                                                    |
+| `DEFAULT_USER_QUOTA_BYTES`     | (Optional) Default per-user quota in bytes (default 50 GiB).                                                             |
+| `SESSION_ACCESS_TTL`           | (Optional) Access-token lifetime in seconds (default 86400 / 24 hours).                                                  |
+| `SESSION_REFRESH_TTL`          | (Optional) Refresh-token lifetime in seconds (default 604800 / 7 days).                                                  |
+| `HTTPS_ONLY_COOKIES`           | (Optional) Set to `true` to force `Secure` cookies outside production.                                                   |
+| `AUTH_ISSUER_NAME`             | (Optional) Label that appears in authenticator apps (default `DevDrive`).                                                |
+| `MAIL_PROVIDER`                | (Optional) `smtp` (default), `sendgrid`, or `brevo`. Use `brevo`/`sendgrid` to bypass blocked SMTP ports via HTTPS APIs. |
+| `MAIL_SMTP_HOST`               | (Optional) SMTP host for outbound email notifications.                                                                   |
+| `MAIL_SMTP_PORT`               | (Optional) SMTP port (default `587`).                                                                                    |
+| `MAIL_SMTP_SECURE`             | (Optional) Set to `true` to enforce TLS from the start (defaults to `true` when port `465`, otherwise STARTTLS).         |
+| `MAIL_SMTP_CONNECTION_TIMEOUT` | (Optional) SMTP connection timeout in ms (default `10000`).                                                              |
+| `MAIL_SMTP_SOCKET_TIMEOUT`     | (Optional) Socket inactivity timeout in ms (default `10000`).                                                            |
+| `MAIL_SMTP_GREETING_TIMEOUT`   | (Optional) SMTP greeting timeout in ms (default `10000`).                                                                |
+| `MAIL_SMTP_DEBUG`              | (Optional) Set to `true` to enable verbose Nodemailer logs.                                                              |
+| `MAIL_SMTP_USER`               | (Optional) SMTP auth username.                                                                                           |
+| `MAIL_SMTP_PASS`               | (Optional) SMTP auth password.                                                                                           |
+| `SENDGRID_API_KEY`             | (Optional) Required when `MAIL_PROVIDER=sendgrid`; use a restricted API key with Mail Send scope.                        |
+| `BREVO_API_KEY`                | (Optional) Required when `MAIL_PROVIDER=brevo`; create a Brevo transactional key (Mail Send permission).                 |
+| `MAIL_FROM`                    | (Optional) From address; defaults to `MAIL_SMTP_USER`.                                                                   |
 
 > Never commit real credentials. Keep `.env` files local only.
 
 > Tip: until you configure the `MAIL_SMTP_*` values, DevDrive will print verification codes to the backend console so you can finish the flow during local development.
+
+> Deploying on DigitalOcean? Outbound SMTP ports 25/465/587 are blocked by default. Either open a support ticket to unlock them or set `MAIL_PROVIDER=brevo`/`sendgrid` (or another HTTPS-based provider) so email can be sent without raw SMTP access.
+
+### Brevo (Sendinblue) quick start
+
+1. [Create a Brevo account](https://www.brevo.com/) and verify a single sender (no DNS changes needed to get started).
+2. Generate a **Transactional** API key from Brevo → SMTP & API > API Keys.
+3. Set `MAIL_PROVIDER=brevo`, `BREVO_API_KEY=<key>`, and `MAIL_FROM=<verified sender email>` in `backend/.env` (SMTP vars can be left blank).
+4. Restart the backend; logs should show “Brevo mail provider configured” and OTP emails will send over HTTPS (port 443).
+
+### SendGrid quick start
+
+1. [Create a restricted API Key](https://app.sendgrid.com/settings/api_keys) with only the “Mail Send” permission.
+2. Verify your sending domain or single sender so SendGrid accepts the `MAIL_FROM` address.
+3. Set `MAIL_PROVIDER=sendgrid`, `SENDGRID_API_KEY=<key>`, and `MAIL_FROM=<verified sender>` in `backend/.env` (SMTP-specific vars can be left blank).
+4. Restart the backend; logs should say “SendGrid mail provider configured” and OTP emails will send over HTTPS port 443.
 
 ---
 

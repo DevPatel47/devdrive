@@ -12,6 +12,8 @@ const parseList = (value, { lowercase = false } = {}) => {
     .map((entry) => (lowercase ? entry.toLowerCase() : entry));
 };
 
+const MailProvider = z.enum(["smtp", "sendgrid", "brevo"]);
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -33,6 +35,7 @@ const envSchema = z.object({
   AUTH_ISSUER_NAME: z.string().default("DevDrive"),
   ADMIN_AUTO_APPROVE_USERS: z.string().optional(),
   ADMIN_NOTIFICATION_EMAILS: z.string().optional(),
+  MAIL_PROVIDER: MailProvider.default("smtp"),
   MAIL_SMTP_HOST: z.string().optional(),
   MAIL_SMTP_PORT: z.coerce.number().default(587),
   MAIL_SMTP_USER: z.string().optional(),
@@ -43,6 +46,8 @@ const envSchema = z.object({
   MAIL_SMTP_SOCKET_TIMEOUT: z.coerce.number().optional(),
   MAIL_SMTP_GREETING_TIMEOUT: z.coerce.number().optional(),
   MAIL_SMTP_DEBUG: z.string().optional(),
+  SENDGRID_API_KEY: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -96,6 +101,7 @@ const config = {
     issuer: env.AUTH_ISSUER_NAME,
   },
   mail: {
+    provider: env.MAIL_PROVIDER,
     host: env.MAIL_SMTP_HOST,
     port: env.MAIL_SMTP_PORT,
     user: env.MAIL_SMTP_USER,
@@ -106,10 +112,16 @@ const config = {
     socketTimeout: env.MAIL_SMTP_SOCKET_TIMEOUT ?? 10_000,
     greetingTimeout: env.MAIL_SMTP_GREETING_TIMEOUT ?? 10_000,
     debug: env.MAIL_SMTP_DEBUG === "true",
+    sendgridApiKey: env.SENDGRID_API_KEY,
+    brevoApiKey: env.BREVO_API_KEY,
     enabled:
-      Boolean(env.MAIL_SMTP_HOST) &&
-      Boolean(env.MAIL_SMTP_USER) &&
-      Boolean(env.MAIL_SMTP_PASS),
+      env.MAIL_PROVIDER === "sendgrid"
+        ? Boolean(env.SENDGRID_API_KEY)
+        : env.MAIL_PROVIDER === "brevo"
+        ? Boolean(env.BREVO_API_KEY)
+        : Boolean(env.MAIL_SMTP_HOST) &&
+          Boolean(env.MAIL_SMTP_USER) &&
+          Boolean(env.MAIL_SMTP_PASS),
   },
 };
 

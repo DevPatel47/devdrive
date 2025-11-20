@@ -21,6 +21,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.932.0",
     "@aws-sdk/s3-request-presigner": "^3.932.0",
+    "@sendgrid/mail": "^8.1.0",
+    "@sendinblue/client": "^3.3.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

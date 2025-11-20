@@ -1,10 +1,32 @@
 import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
+import SibApiV3Sdk from "@sendinblue/client";
 import config from "../config/env.js";
 import logger from "../config/logger.js";
 
+const provider = config.mail.provider;
 let transporter = null;
+let sendgridReady = false;
+let brevoClient = null;
+let brevoReady = false;
 
-if (config.mail.enabled) {
+const parseAddress = (value) => {
+  if (!value) return {};
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(.*)<([^>]+)>$/);
+  if (match) {
+    const name = match[1].trim().replace(/^"|"$/g, "");
+    return { email: match[2].trim(), name: name || undefined };
+  }
+  return { email: trimmed };
+};
+
+const normalizeRecipients = (value) => {
+  if (!value) return [];
+  return (Array.isArray(value) ? value : [value]).filter(Boolean);
+};
+
+if (provider === "smtp" && config.mail.enabled) {
   transporter = nodemailer.createTransport({
     host: config.mail.host,
     port: config.mail.port,
@@ -31,15 +53,115 @@ if (config.mail.enabled) {
         "SMTP transport verification failed"
       );
     });
+} else if (provider === "sendgrid" && config.mail.enabled) {
+  try {
+    sgMail.setApiKey(config.mail.sendgridApiKey);
+    sendgridReady = true;
+    logger.info("SendGrid mail provider configured");
+  } catch (error) {
+    logger.error({ err: error }, "Failed to configure SendGrid provider");
+  }
+} else if (provider === "brevo" && config.mail.enabled) {
+  try {
+    brevoClient = new SibApiV3Sdk.TransactionalEmailsApi();
+    brevoClient.setApiKey(
+      SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+      config.mail.brevoApiKey
+    );
+    brevoReady = true;
+    logger.info("Brevo mail provider configured");
+  } catch (error) {
+    logger.error({ err: error }, "Failed to configure Brevo provider");
+  }
 }
 
+const isMailReady = () => {
+  if (!config.mail.enabled) return false;
+  if (provider === "smtp") return Boolean(transporter);
+  if (provider === "sendgrid") return sendgridReady;
+  if (provider === "brevo") return brevoReady;
+  return false;
+};
+
 const sendMail = async ({ to, subject, text, html }) => {
-  if (!config.mail.enabled || !transporter) {
+  if (!isMailReady()) {
     logger.info(
-      { to, subject },
-      "Email skipped because SMTP is not configured"
+      { to, subject, provider },
+      "Email skipped because mail transport is not configured"
     );
     return false;
+  }
+
+  if (provider === "sendgrid") {
+    try {
+      const start = Date.now();
+      const [response] = await sgMail.send({
+        from: config.mail.from,
+        to,
+        subject,
+        text,
+        html,
+      });
+      const durationMs = Date.now() - start;
+      logger.debug(
+        {
+          to,
+          subject,
+          durationMs,
+          provider,
+          statusCode: response?.statusCode,
+        },
+        "Email delivered via SendGrid"
+      );
+      return true;
+    } catch (error) {
+      logger.error(
+        { err: error, to, subject, provider },
+        "Failed to send email via SendGrid"
+      );
+      return false;
+    }
+  }
+
+  if (provider === "brevo") {
+    try {
+      const start = Date.now();
+      const sender = parseAddress(config.mail.from);
+      const recipientList = normalizeRecipients(to).map((email) => ({
+        email,
+      }));
+      if (!sender.email) {
+        throw new Error("MAIL_FROM must be a valid email address for Brevo");
+      }
+      if (!recipientList.length) {
+        throw new Error("No recipients provided for Brevo email");
+      }
+      const response = await brevoClient.sendTransacEmail({
+        sender,
+        to: recipientList,
+        subject,
+        textContent: text,
+        htmlContent: html,
+      });
+      const durationMs = Date.now() - start;
+      logger.debug(
+        {
+          to: recipientList.map((entry) => entry.email),
+          subject,
+          durationMs,
+          provider,
+          messageId: response?.body?.messageId,
+        },
+        "Email delivered via Brevo"
+      );
+      return true;
+    } catch (error) {
+      logger.error(
+        { err: error, to, subject, provider },
+        "Failed to send email via Brevo"
+      );
+      return false;
+    }
   }
 
   try {
@@ -101,7 +223,7 @@ export const sendEmailVerificationCode = async ({ username, email, code }) => {
   if (!delivered) {
     logger.info(
       { username, code },
-      "Email verification code logged because SMTP delivery failed"
+      "Email verification code logged because mail delivery failed"
     );
   }
 };
