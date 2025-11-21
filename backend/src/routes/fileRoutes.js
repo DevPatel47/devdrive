@@ -12,6 +12,7 @@ import {
 } from "../controllers/fileController.js";
 import { getFolderUsage } from "../controllers/storageController.js";
 
+/** @type {import("express").Router} */
 const router = Router();
 
 router.get("/files", requireAuth, asyncHandler(listFiles));

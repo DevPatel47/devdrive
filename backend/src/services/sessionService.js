@@ -19,6 +19,13 @@ const cookieBaseOptions = {
   path: "/",
 };
 
+/**
+ * Central helper for writing HTTP-only session cookies.
+ * @param {import("express").Response} res
+ * @param {string} name
+ * @param {string} value
+ * @param {number} ttlSeconds
+ */
 const setCookieToken = (res, name, value, ttlSeconds) => {
   res.cookie(name, value, {
     ...cookieBaseOptions,
@@ -26,10 +33,18 @@ const setCookieToken = (res, name, value, ttlSeconds) => {
   });
 };
 
+/**
+ * Removes a cookie using the shared base options.
+ * @param {import("express").Response} res
+ * @param {string} name
+ */
 const clearCookie = (res, name) => {
   res.clearCookie(name, cookieBaseOptions);
 };
 
+/**
+ * Purges expired refresh tokens from the in-memory store.
+ */
 const cleanupRefreshTokens = () => {
   const now = Date.now();
   for (const [jti, entry] of refreshTokenStore.entries()) {
@@ -41,6 +56,11 @@ const cleanupRefreshTokens = () => {
 
 setInterval(cleanupRefreshTokens, 60 * 60 * 1000).unref?.();
 
+/**
+ * Issues a signed JWT for access/refresh/pending flows.
+ * @param {{ type: string, subject: string, ttl: number }} options
+ * @returns {{ token: string, jti: string }}
+ */
 const createToken = ({ type, subject, ttl }) => {
   const jti = crypto.randomUUID();
   const token = jwt.sign({ type }, config.session.secret, {
@@ -51,6 +71,11 @@ const createToken = ({ type, subject, ttl }) => {
   return { token, jti };
 };
 
+/**
+ * Validates a JWT and ensures it matches the expected token type.
+ * @param {string} token
+ * @param {string} expectedType
+ */
 const verifyToken = (token, expectedType) => {
   const payload = jwt.verify(token, config.session.secret);
   if (payload.type !== expectedType) {
@@ -59,6 +84,11 @@ const verifyToken = (token, expectedType) => {
   return payload;
 };
 
+/**
+ * Persists refresh token identifiers so they can be revoked later.
+ * @param {string} jti
+ * @param {string} subject
+ */
 const registerRefreshToken = (jti, subject) => {
   cleanupRefreshTokens();
   refreshTokenStore.set(jti, {
@@ -67,6 +97,10 @@ const registerRefreshToken = (jti, subject) => {
   });
 };
 
+/**
+ * Ensures a refresh token is still active before issuing new cookies.
+ * @param {string} jti
+ */
 const assertRefreshTokenActive = (jti) => {
   const entry = refreshTokenStore.get(jti);
   if (!entry || entry.expiresAt <= Date.now()) {
@@ -76,12 +110,22 @@ const assertRefreshTokenActive = (jti) => {
   return entry;
 };
 
+/**
+ * Deletes a refresh token from the store.
+ * @param {string | undefined} jti
+ */
 const revokeRefreshToken = (jti) => {
   if (jti) {
     refreshTokenStore.delete(jti);
   }
 };
 
+/**
+ * Generates new access/refresh cookies for a subject.
+ * @param {import("express").Response} res
+ * @param {string} subject
+ * @param {object} [metadata]
+ */
 export const issueSessionCookies = (res, subject, metadata = {}) => {
   const access = createToken({
     type: "access",
@@ -115,6 +159,11 @@ export const issueSessionCookies = (res, subject, metadata = {}) => {
   };
 };
 
+/**
+ * Issues a short-lived pending-token cookie used during MFA.
+ * @param {import("express").Response} res
+ * @param {string} subject
+ */
 export const createPendingLogin = (res, subject) => {
   const pending = createToken({
     type: "pending",
@@ -127,10 +176,18 @@ export const createPendingLogin = (res, subject) => {
   return pending;
 };
 
+/**
+ * Removes the pending login cookie.
+ * @param {import("express").Response} res
+ */
 export const clearPendingLogin = (res) => {
   clearCookie(res, COOKIE_NAMES.pending);
 };
 
+/**
+ * Removes every session-related cookie value.
+ * @param {import("express").Response} res
+ */
 export const clearSessionCookies = (res) => {
   Object.values(COOKIE_NAMES).forEach((name) => clearCookie(res, name));
 };
@@ -139,6 +196,11 @@ export const verifyPendingToken = (token) => verifyToken(token, "pending");
 export const verifyAccessToken = (token) => verifyToken(token, "access");
 export const verifyRefreshToken = (token) => verifyToken(token, "refresh");
 
+/**
+ * Validates a refresh cookie, rotates it, and returns new access metadata.
+ * @param {import("express").Response} res
+ * @param {string | undefined} refreshToken
+ */
 export const handleRefresh = (res, refreshToken) => {
   if (!refreshToken) {
     throw new ApiError(401, "Not authenticated");
@@ -149,6 +211,10 @@ export const handleRefresh = (res, refreshToken) => {
   return issueSessionCookies(res, payload.sub);
 };
 
+/**
+ * Revokes the refresh token referenced by the cookie without throwing on errors.
+ * @param {string | undefined} refreshToken
+ */
 export const revokeFromCookie = (refreshToken) => {
   if (!refreshToken) return;
   try {
@@ -159,6 +225,10 @@ export const revokeFromCookie = (refreshToken) => {
   }
 };
 
+/**
+ * Exposes the canonical cookie names for downstream modules.
+ * @returns {{ access: string, refresh: string, pending: string }}
+ */
 export const getCookieNames = () => COOKIE_NAMES;
 
 export default {

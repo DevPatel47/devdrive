@@ -3,17 +3,31 @@ import { formatBytes } from "../utils/formatters";
 
 const GB = 1024 ** 3;
 
+/**
+ * Converts bytes to a rounded integer representation in gigabytes.
+ * @param {number | undefined} bytes
+ * @returns {string}
+ */
 const toGbValue = (bytes) => {
   if (!bytes || bytes <= 0) return "";
   return Math.round(bytes / GB);
 };
 
+/**
+ * Converts gigabytes back to bytes for API submission.
+ * @param {string | number} gigabytes
+ * @returns {number | undefined}
+ */
 const toBytes = (gigabytes) => {
   const value = Number(gigabytes);
   if (!Number.isFinite(value) || value <= 0) return undefined;
   return Math.round(value * GB);
 };
 
+/**
+ * Generic panel section used for both pending and approved user blocks.
+ * @param {{ title: string, children: import("react").ReactNode }} props
+ */
 const Section = ({ title, children }) => (
   <section className="space-y-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-brand-800 dark:bg-brand-900/70">
     <div className="flex items-center justify-between">
@@ -25,6 +39,18 @@ const Section = ({ title, children }) => (
   </section>
 );
 
+/**
+ * Renders the controls for a single user row.
+ * @param {{
+ *  user: any,
+ *  quotaValue: string,
+ *  onQuotaChange: (value: string) => void,
+ *  onApprove?: () => void,
+ *  onQuotaUpdate?: () => void,
+ *  actionLabel?: string,
+ *  loading: boolean,
+ * }} props
+ */
 const UserRow = ({
   user,
   quotaValue,
@@ -85,6 +111,19 @@ const UserRow = ({
   );
 };
 
+/**
+ * Admin dashboard overlay for approving users and editing quotas.
+ * @param {{
+ *  open: boolean,
+ *  onClose: () => void,
+ *  pendingUsers?: any[],
+ *  approvedUsers?: any[],
+ *  loading?: boolean,
+ *  onRefresh: () => void,
+ *  onApprove: (user: any, quota?: number) => void,
+ *  onQuotaUpdate: (user: any, quota?: number) => void,
+ * }} props
+ */
 const AdminPanel = ({
   open,
   onClose,

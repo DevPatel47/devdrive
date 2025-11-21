@@ -6,6 +6,10 @@ import {
 } from "./helpers.js";
 import { sendEmailVerificationCode } from "../emailService.js";
 
+/**
+ * Generates and dispatches an OTP while returning timing metadata.
+ * @param {{ email: string }} payload
+ */
 export const prepareEmailVerificationSession = async ({ email }) => {
   const otpCode = generateEmailOtp();
   const otpHash = await bcrypt.hash(otpCode, 8);

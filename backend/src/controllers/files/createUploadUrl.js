@@ -11,6 +11,10 @@ import {
   calculatePrefixUsage,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const createUploadUrlController = async (req, res) => {
   const {
     key,

@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { FiUserPlus } from "react-icons/fi";
 
+/**
+ * Initial registration step collecting email/password.
+ * @param {{
+ *  onSubmit: ({ username: string, password: string }) => void,
+ *  loading?: boolean,
+ *  error?: string,
+ *  onSwitchToLogin?: () => void,
+ *  onShowHowItWorks?: () => void,
+ * }} props
+ */
 const RegisterCard = ({
   onSubmit,
   loading,

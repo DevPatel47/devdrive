@@ -21,6 +21,11 @@ import {
 } from "./tokenFactory.js";
 import { prepareEmailVerificationSession } from "./emailVerificationSession.js";
 
+/**
+ * Deletes unverified records so users can restart registration cleanly.
+ * @param {import("../../models/User.js").default | null} user
+ * @returns {Promise<import("../../models/User.js").default | null>}
+ */
 const cleanupUnverifiedUser = async (user) => {
   if (user && !user.emailVerification?.verified) {
     await User.deleteOne({ _id: user._id });
@@ -29,12 +34,20 @@ const cleanupUnverifiedUser = async (user) => {
   return user;
 };
 
+/**
+ * Prevents reusing usernames of already verified and approved users.
+ * @param {import("../../models/User.js").default | null} user
+ */
 const ensureUserApprovedOrPending = (user) => {
   if (user && user.mfaVerified) {
     throw new ApiError(409, "Username is already in use");
   }
 };
 
+/**
+ * Assigns elevated privileges/approval if the username is pre-approved.
+ * @param {import("../../models/User.js").default} user
+ */
 const autoApproveIfNeeded = (user) => {
   const autoApprove = config.admin.autoApproveUsernames.includes(
     user.usernameLower
@@ -47,6 +60,10 @@ const autoApproveIfNeeded = (user) => {
   }
 };
 
+/**
+ * Validates credentials, starts an email OTP session, and issues a verification token.
+ * @param {{ username: string, password: string }} payload
+ */
 export const initRegistration = async ({ username, password }) => {
   const email = validateEmail(username);
   validateCredentials({ email, password });
@@ -90,6 +107,10 @@ export const initRegistration = async ({ username, password }) => {
   };
 };
 
+/**
+ * Confirms the emailed OTP and ensures a user record exists for the next step.
+ * @param {{ token: string, code: string }} payload
+ */
 export const verifyEmailOtp = async ({ token, code }) => {
   ensureCodeProvided(code);
 
@@ -152,6 +173,10 @@ export const verifyEmailOtp = async ({ token, code }) => {
   };
 };
 
+/**
+ * Sends another OTP if the cooldown has elapsed.
+ * @param {{ token: string }} payload
+ */
 export const resendEmailOtp = async ({ token }) => {
   const payload = decodeEmailVerificationToken(token);
 
@@ -194,6 +219,10 @@ export const resendEmailOtp = async ({ token }) => {
   };
 };
 
+/**
+ * Validates the TOTP code, finalizes provisioning, and ensures storage roots exist.
+ * @param {{ token: string, code: string }} payload
+ */
 export const verifyRegistration = async ({ token, code }) => {
   ensureCodeProvided(code, "Verification code is required");
 

@@ -6,6 +6,12 @@ import { normalizePrefix } from "../../utils/keySanitizer.js";
 import { withUserPrefix, stripUserPrefix } from "../../utils/userRoot.js";
 import { listObjects, calculatePrefixUsage } from "../../services/s3Service.js";
 
+/**
+ * Computes aggregated usage stats for every child folder.
+ * @param {{ key: string }[]} folders
+ * @param {string} userPrefix
+ * @returns {Promise<Array<object>>}
+ */
 const buildFolderUsage = async (folders, userPrefix) => {
   const folderUsages = await Promise.all(
     folders.map(async (folder) => {
@@ -27,6 +33,11 @@ const buildFolderUsage = async (folders, userPrefix) => {
   }));
 };
 
+/**
+ * HTTP handler that lists folders/files underneath a user prefix.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const listFiles = async (req, res) => {
   const relativePrefix = normalizePrefix(req.query.prefix || "");
   const absolutePrefix = withUserPrefix(req.user.rootPrefix, relativePrefix);

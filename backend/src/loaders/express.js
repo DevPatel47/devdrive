@@ -15,6 +15,10 @@ const corsOptions = {
   methods: ["GET", "POST", "DELETE", "OPTIONS"],
 };
 
+/**
+ * Applies middleware, CORS, and routes to an Express application instance.
+ * @param {import("express").Express} app
+ */
 export const registerAppLoaders = (app) => {
   app.set("trust proxy", 1);
   app.disable("x-powered-by");

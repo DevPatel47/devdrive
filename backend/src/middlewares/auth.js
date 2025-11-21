@@ -9,6 +9,12 @@ import { buildUserRoot } from "../utils/userRoot.js";
 
 const COOKIE_NAMES = getCookieNames();
 
+/**
+ * Ensures callers have a valid access token and attaches the hydrated user.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} _res
+ * @param {import("express").NextFunction} next
+ */
 export const requireAuth = async (req, _res, next) => {
   const token = req.cookies?.[COOKIE_NAMES.access];
   if (!token) {

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { FiShield } from "react-icons/fi";
 
+/**
+ * Handles the second factor challenge during login/registration.
+ * @param {{ onSubmit: ({ code: string }) => void, onBack: () => void, loading?: boolean, error?: string }} props
+ */
 const MfaCard = ({ onSubmit, onBack, loading, error }) => {
   const [code, setCode] = useState("");
 

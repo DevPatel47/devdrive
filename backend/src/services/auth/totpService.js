@@ -2,6 +2,10 @@ import ApiError from "../../utils/apiError.js";
 import { ensureCodeProvided, sanitizeTotpCode } from "./helpers.js";
 import { verifyTotpCode } from "./totpUtils.js";
 
+/**
+ * Validates a TOTP code for a fully enrolled user.
+ * @param {{ user: import("../../models/User.js").default, code: string }} payload
+ */
 export const verifyTotpForUser = async ({ user, code }) => {
   ensureCodeProvided(code, "One-time code is required");
   const sanitizedCode = sanitizeTotpCode(code);

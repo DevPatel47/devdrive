@@ -13,6 +13,10 @@ import {
 import clsx from "clsx";
 import FileItem from "./FileItem";
 
+/**
+ * Converts a file item's last modified date into a sortable timestamp.
+ * @param {{ lastModified?: string }} item
+ */
 const recentValue = (item) =>
   item.lastModified ? new Date(item.lastModified).getTime() : 0;
 
@@ -22,6 +26,21 @@ const sorters = {
   size: (a, b) => (b.size || 0) - (a.size || 0),
 };
 
+/**
+ * Primary file list/grid surface supporting search, sort, and context menus.
+ * @param {{
+ *  items?: Array<{ key: string, type: string, name: string }>,
+ *  loading?: boolean,
+ *  viewMode?: "grid" | "list",
+ *  onViewModeChange: (mode: "grid" | "list") => void,
+ *  sortOption?: "name" | "recent" | "size",
+ *  onSortChange: (option: string) => void,
+ *  selected?: { key: string } | null,
+ *  onSelect: (item: object) => void,
+ *  onOpen: (item: object) => void,
+ *  onAction: (action: string, item: object) => void,
+ * }} props
+ */
 const FileExplorer = ({
   items = [],
   loading = false,

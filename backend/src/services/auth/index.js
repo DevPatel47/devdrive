@@ -7,6 +7,7 @@ import {
 import { validateLogin } from "./loginService.js";
 import { verifyTotpForUser } from "./totpService.js";
 
+/** Re-export granular auth services for easier importing. */
 export {
   initRegistration,
   verifyEmailOtp,

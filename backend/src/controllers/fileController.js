@@ -6,6 +6,10 @@ import createFolderController from "./files/createFolder.js";
 import renameObjectController from "./files/renameObject.js";
 import moveObjectController from "./files/moveObject.js";
 
+/**
+ * Collects all file-related HTTP handlers so routes can import a single module.
+ */
+
 export {
   listFiles,
   createUploadUrlController,

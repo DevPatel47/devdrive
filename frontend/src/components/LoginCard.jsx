@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { FiLock } from "react-icons/fi";
 
+/**
+ * Collects username/password credentials before MFA.
+ * @param {{
+ *  onSubmit: ({ username: string, password: string }) => void,
+ *  loading?: boolean,
+ *  error?: string,
+ *  onSwitchToRegister?: () => void,
+ *  onShowHowItWorks?: () => void,
+ * }} props
+ */
 const LoginCard = ({
   onSubmit,
   loading,

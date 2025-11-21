@@ -3,6 +3,10 @@ import config from "./env.js";
 
 const isProduction = config.env === "production";
 
+/**
+ * Shared pino logger configured for pretty output in development.
+ * @type {import("pino").Logger}
+ */
 const logger = pino({
   level: config.log.level,
   base: { service: "devdrive-backend" },

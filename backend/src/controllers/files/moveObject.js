@@ -18,6 +18,10 @@ import {
   deleteObjectByKey,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const moveObjectController = async (req, res) => {
   const { sourceKey, destinationPrefix = "" } = req.body || {};
   const folderCandidate = isFolderKey(sourceKey);

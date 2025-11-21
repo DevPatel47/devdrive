@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import config from "./env.js";
 import logger from "./logger.js";
 
+/**
+ * Establishes the primary MongoDB connection and terminates the process on failure.
+ * @returns {Promise<void>} Resolves when the shared connection is ready.
+ */
 export const connectDatabase = async () => {
   try {
     await mongoose.connect(config.mongoUri, {

@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { formatBytes, formatDate, getFileType } from "../utils/formatters";
 
+/** Maps type metadata to the icon component used inside the card. */
 const iconByType = {
   folder: FiFolder,
   image: FiImage,
@@ -18,6 +19,19 @@ const iconByType = {
   file: FiFileText,
 };
 
+/**
+ * Interactive representation of a single file or folder.
+ * @param {{
+ *  item: { key: string, type: string, name: string, size?: number, lastModified?: string },
+ *  viewMode?: "grid" | "list",
+ *  isSelected?: boolean,
+ *  onSelect: (item: object) => void,
+ *  onOpen: (item: object) => void,
+ *  onContextMenu: (event: import("react").MouseEvent, item: object) => void,
+ *  onAction: (action: string, item: object) => void,
+ *  disabled?: boolean,
+ * }} props
+ */
 const FileItem = ({
   item,
   viewMode = "grid",
@@ -62,6 +76,9 @@ const FileItem = ({
     }
   };
 
+  /**
+   * Mobile/touch-specific heuristic: folders open immediately on tap.
+   */
   const shouldOpenOnTap = () =>
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;

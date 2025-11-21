@@ -13,6 +13,12 @@ import {
 } from "../../../api/auth";
 import { setUnauthorizedHandler } from "../../../api/client";
 
+/**
+ * Extracts the most relevant error message from an Axios error response.
+ * @param {import("axios").AxiosError|Error} error - Error thrown from API calls.
+ * @param {string} fallbackMessage - Message used when the response lacks details.
+ * @returns {string} A user-friendly error message.
+ */
 const getErrorMessage = (error, fallbackMessage) => {
   const apiMessage =
     typeof error?.response?.data?.error === "string"
@@ -26,6 +32,21 @@ const getErrorMessage = (error, fallbackMessage) => {
   );
 };
 
+/**
+ * Orchestrates the authentication experience (login, registration, MFA, session bootstrapping).
+ * @param {Object} [params]
+ * @param {Function} [params.onSessionReset] - Optional handler invoked when auth state needs a reset.
+ * @returns {{
+ *   handleLoginSubmit: Function,
+ *   handleRegisterSubmit: Function,
+ *   handleEmailOtpSubmit: Function,
+ *   handleResendEmailOtp: Function,
+ *   handleRegisterVerify: Function,
+ *   handleMfaSubmit: Function,
+ *   handleMfaBack: Function,
+ *   handleLogout: Function,
+ * }} Public API for the auth forms.
+ */
 const useAuthFlow = ({ onSessionReset } = {}) => {
   const {
     sessionState,
@@ -56,6 +77,7 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
   }, [handleSwitchToLogin, onSessionReset]);
 
   useEffect(() => {
+    // Register a global handler so 401 responses always funnel through this hook.
     setUnauthorizedHandler(handleUnauthorized);
   }, [handleUnauthorized]);
 
@@ -88,6 +110,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     };
   }, [applySessionUser, setAuthLoading, setSessionState]);
 
+  /**
+   * Handles credential submission for the login surface.
+   * @param {{username: string, password: string}} params
+   */
   const handleLoginSubmit = useCallback(
     async ({ username, password }) => {
       setAuthLoading(true);
@@ -108,6 +134,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     [setAuthError, setAuthLoading, setSessionState]
   );
 
+  /**
+   * Starts the registration funnel, requesting email verification if needed.
+   * @param {{username: string, password: string}} params
+   */
   const handleRegisterSubmit = useCallback(
     async ({ username, password }) => {
       setAuthLoading(true);
@@ -156,6 +186,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     [setAuthError, setAuthLoading, setRegistrationContext, setSessionState]
   );
 
+  /**
+   * Confirms the email OTP and advances the flow to MFA enrollment.
+   * @param {{code: string}} params
+   */
   const handleEmailOtpSubmit = useCallback(
     async ({ code }) => {
       if (!registrationContext?.verificationToken) {
@@ -196,6 +230,9 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     ]
   );
 
+  /**
+   * Resends the email OTP when the cooldown window allows it.
+   */
   const handleResendEmailOtp = useCallback(async () => {
     if (!registrationContext?.verificationToken) {
       setAuthError("Verification session expired. Please start over.");
@@ -239,6 +276,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     setSessionState,
   ]);
 
+  /**
+   * Finishes registration by validating the MFA code and creating the account.
+   * @param {{code: string}} params
+   */
   const handleRegisterVerify = useCallback(
     async ({ code }) => {
       if (!registrationContext?.verificationToken) {
@@ -279,6 +320,10 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     ]
   );
 
+  /**
+   * Verifies the MFA challenge when logging in after the initial credentials step.
+   * @param {{code: string}} params
+   */
   const handleMfaSubmit = useCallback(
     async ({ code }) => {
       setAuthLoading(true);
@@ -297,11 +342,17 @@ const useAuthFlow = ({ onSessionReset } = {}) => {
     [applySessionUser, setAuthError, setAuthLoading, setSessionState]
   );
 
+  /**
+   * Returns the UI to the username/password step from the MFA challenge.
+   */
   const handleMfaBack = useCallback(() => {
     setAuthError("");
     setSessionState("login");
   }, [setAuthError, setSessionState]);
 
+  /**
+   * Ends the current session and communicates the outcome to the parent surface.
+   */
   const handleLogout = useCallback(async () => {
     try {
       await logoutRequest();

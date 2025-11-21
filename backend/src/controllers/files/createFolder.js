@@ -9,6 +9,10 @@ import {
   createFolderPlaceholder,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const createFolderController = async (req, res) => {
   const { prefix = "", name } = req.body || {};
   const folderName = sanitizeSegment(name);

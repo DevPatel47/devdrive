@@ -9,6 +9,10 @@ import {
   createDownloadUrl,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const createDownloadUrlController = async (req, res) => {
   const safeKey = sanitizeKey(req.query.key);
   const absoluteKey = withUserKey(req.user.rootPrefix, safeKey);

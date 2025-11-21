@@ -10,6 +10,11 @@ import config from "../config/env.js";
 
 const VALID_STATUSES = new Set(["pending", "approved", "suspended"]);
 
+/**
+ * Converts a User document into a safe admin response payload.
+ * @param {import("../models/User.js").default} user - Mongoose user instance.
+ * @returns {object} Sanitized representation suitable for responses.
+ */
 const serializeUser = (user) => ({
   id: user.id,
   username: user.username,
@@ -23,6 +28,11 @@ const serializeUser = (user) => ({
   mfaVerified: user.mfaVerified,
 });
 
+/**
+ * Lists users optionally filtered by status plus current storage usage.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const listUsers = async (req, res) => {
   const { status } = req.query || {};
   const filter = {};
@@ -45,6 +55,11 @@ export const listUsers = async (req, res) => {
   res.json({ users: results });
 };
 
+/**
+ * Approves a pending user, provisions their root prefix, and notifies them.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const approveUser = async (req, res) => {
   const { id } = req.params;
   const { maxStorageBytes } = req.body || {};
@@ -80,6 +95,11 @@ export const approveUser = async (req, res) => {
   res.json({ user: serializeUser(user) });
 };
 
+/**
+ * Updates the storage quota for a specific user.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const updateUserQuota = async (req, res) => {
   const { id } = req.params;
   const { maxStorageBytes } = req.body || {};

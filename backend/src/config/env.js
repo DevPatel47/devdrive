@@ -3,6 +3,12 @@ import { z } from "zod";
 
 dotenv.config();
 
+/**
+ * Splits a comma-separated configuration value and optionally normalizes case.
+ * @param {string | undefined} value - Raw environment variable contents.
+ * @param {{ lowercase?: boolean }} [options] - Parsing modifiers.
+ * @returns {string[]} Ordered list of sanitized entries.
+ */
 const parseList = (value, { lowercase = false } = {}) => {
   if (!value) return [];
   return value
@@ -59,6 +65,10 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
+/**
+ * Infers whether SMTP should run in secure (TLS) mode.
+ * @returns {boolean} True when secure transport is expected.
+ */
 const inferMailSecure = () => {
   if (typeof env.MAIL_SMTP_SECURE === "string") {
     return env.MAIL_SMTP_SECURE === "true";
@@ -66,6 +76,10 @@ const inferMailSecure = () => {
   return env.MAIL_SMTP_PORT === 465;
 };
 
+/**
+ * Centralized runtime configuration derived from validated environment variables.
+ * @type {object}
+ */
 const config = {
   env: env.NODE_ENV,
   port: env.PORT,

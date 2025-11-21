@@ -10,6 +10,10 @@ import {
   deleteFolderObjects,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const deleteObjectController = async (req, res) => {
   const rawKey = req.query.key;
   const folderCandidate = isFolderKey(rawKey);

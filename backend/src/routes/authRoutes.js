@@ -14,6 +14,7 @@ import {
   currentUser,
 } from "../controllers/authController.js";
 
+/** @type {import("express").Router} */
 const router = Router();
 
 router.post("/register/init", authLimiter, asyncHandler(registerInit));

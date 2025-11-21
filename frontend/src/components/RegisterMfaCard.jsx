@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { FiShield } from "react-icons/fi";
 
+/**
+ * Guides the user through MFA enrollment and code confirmation.
+ * @param {{
+ *  context: null | { username: string, qrCodeDataUrl: string, secret: string },
+ *  onSubmit: ({ code: string }) => void,
+ *  onBack: () => void,
+ *  loading?: boolean,
+ *  error?: string,
+ * }} props
+ */
 const RegisterMfaCard = ({ context, onSubmit, onBack, loading, error }) => {
   const [code, setCode] = useState("");
 

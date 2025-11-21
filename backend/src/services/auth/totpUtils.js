@@ -2,12 +2,20 @@ import speakeasy from "speakeasy";
 import QRCode from "qrcode";
 import config from "../../config/env.js";
 
+/**
+ * Creates a new TOTP secret tailored to the user's email.
+ * @param {string} username
+ */
 export const generateTotpSecret = (username) =>
   speakeasy.generateSecret({
     name: `${config.auth.issuer} (${username})`,
     length: 32,
   });
 
+/**
+ * Populates the user's secret if it has not been set yet.
+ * @param {import("../../models/User.js").default} user
+ */
 export const ensureTotpSecret = (user) => {
   if (!user.totpSecret) {
     const secret = generateTotpSecret(user.username);
@@ -15,6 +23,10 @@ export const ensureTotpSecret = (user) => {
   }
 };
 
+/**
+ * Produces the QR code, secret, and otpauth URL that the UI displays.
+ * @param {import("../../models/User.js").default} user
+ */
 export const buildTotpArtifacts = async (user) => {
   ensureTotpSecret(user);
   const otpauthUrl = speakeasy.otpauthURL({
@@ -31,6 +43,11 @@ export const buildTotpArtifacts = async (user) => {
   };
 };
 
+/**
+ * Validates a user-submitted TOTP code allowing a small window for drift.
+ * @param {string} secret
+ * @param {string} code
+ */
 export const verifyTotpCode = (secret, code) =>
   speakeasy.totp.verify({
     secret,

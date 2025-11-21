@@ -3,6 +3,11 @@
  * These helpers avoid direct dependencies on the dashboard view so that tests
  * and other features can reuse the same naming and id-generation logic.
  */
+/**
+ * Normalizes folder/file names while preventing traversal.
+ * @param {string} [name]
+ * @returns {string}
+ */
 export const safeName = (name = "") => {
   const segments = name
     .split(/[\\/]+/)
@@ -19,6 +24,10 @@ export const safeName = (name = "") => {
   return segments.join("/");
 };
 
+/**
+ * Generates a reasonably unique identifier for client-side queues.
+ * @returns {string}
+ */
 export const createId = () => {
   if (
     typeof crypto !== "undefined" &&

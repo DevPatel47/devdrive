@@ -1,5 +1,6 @@
 import { FiInfo, FiShield, FiUsers, FiCheckCircle } from "react-icons/fi";
 
+/** Ordered list of onboarding principles displayed in the modal. */
 const steps = [
   {
     icon: FiUsers,
@@ -27,6 +28,10 @@ const steps = [
   },
 ];
 
+/**
+ * Educates users on the staged onboarding and security safeguards.
+ * @param {{ open: boolean, onClose: () => void }} props
+ */
 const HowDevDriveWorksModal = ({ open, onClose }) => {
   if (!open) return null;
 

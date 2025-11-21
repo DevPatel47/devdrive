@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { FiMail } from "react-icons/fi";
 
+/**
+ * Confirms email ownership during registration via OTP entry.
+ * @param {{
+ *  email: string,
+ *  onSubmit: ({ code: string }) => void,
+ *  onBack: () => void,
+ *  onResend?: () => Promise<void>,
+ *  loading?: boolean,
+ *  resendLoading?: boolean,
+ *  resendAvailableAt?: number,
+ *  codeExpiresAt?: number,
+ *  error?: string,
+ * }} props
+ */
 const RegisterEmailOtpCard = ({
   email,
   onSubmit,

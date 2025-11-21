@@ -4,6 +4,9 @@
  */
 import { useEffect, useState } from "react";
 
+/**
+ * @returns {[boolean, (value: boolean | ((prev: boolean) => boolean)) => void]}
+ */
 const useDashboardTheme = () => {
   const prefersDark =
     typeof window !== "undefined" &&

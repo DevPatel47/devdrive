@@ -9,6 +9,9 @@ import {
 } from "react-icons/fi";
 import { formatBytes } from "../utils/formatters";
 
+/**
+ * Shared layout component for both desktop and mobile sidebars.
+ */
 const SidebarContent = ({
   onCreateFolder,
   onUploadClick,
@@ -113,12 +116,20 @@ const SidebarContent = ({
   );
 };
 
+/**
+ * Desktop sidebar container.
+ * @param {object} props
+ */
 const Sidebar = (props) => (
   <aside className="hidden w-full max-w-xs flex-col gap-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-brand-800 dark:bg-brand-900/80 lg:flex">
     <SidebarContent {...props} />
   </aside>
 );
 
+/**
+ * Slide-down drawer that exposes sidebar controls on mobile.
+ * @param {{ open: boolean, onClose: () => void }} param0
+ */
 export const MobileSidebarDrawer = ({ open, onClose, ...props }) => {
   return (
     <div

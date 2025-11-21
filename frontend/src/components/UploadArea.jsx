@@ -3,6 +3,10 @@ import { FiUploadCloud, FiFolderPlus } from "react-icons/fi";
 import clsx from "clsx";
 import { formatBytes } from "../utils/formatters";
 
+/**
+ * Drag-and-drop plus manual select surface for uploads.
+ * @param {{ onFilesSelected: (files: File[]) => void, uploads?: Array<{ id: string, name: string, status: string, progress: number, bytesUploaded: number, totalBytes: number }> }} props
+ */
 const UploadArea = ({ onFilesSelected, uploads = [] }) => {
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);

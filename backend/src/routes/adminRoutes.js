@@ -8,6 +8,7 @@ import {
   updateUserQuota,
 } from "../controllers/adminController.js";
 
+/** @type {import("express").Router} */
 const router = Router();
 
 router.use(requireAuth, requireAdmin);

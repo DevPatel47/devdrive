@@ -2,6 +2,7 @@
  * Renders the authenticated dashboard shell while delegating behavioral logic
  * to the parent container. Accepts fully shaped props for each widget so that
  * presentation stays isolated from business logic.
+ * @param {object} props
  */
 import { FiShield, FiSliders } from "react-icons/fi";
 import Breadcrumbs from "../../../components/Breadcrumbs";

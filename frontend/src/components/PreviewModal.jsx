@@ -2,9 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiDownload, FiX } from "react-icons/fi";
 import { formatBytes } from "../utils/formatters";
 
+/**
+ * Displays inline previews (image/pdf/text) with graceful fallbacks.
+ * @param {{ preview: null | { kind: string, url: string, name: string, size: number, item: object }, onClose: () => void, onDownload: (item: object) => void }} props
+ */
 const PreviewModal = ({ preview, onClose, onDownload }) => {
   if (!preview) return null;
 
+  /** Renders body content according to preview.kind. */
   const renderBody = () => {
     if (preview.kind === "image") {
       return (

@@ -6,8 +6,35 @@ import {
   useState,
 } from "react";
 
-const SessionContext = createContext(null);
+/**
+ * @typedef {Object} SessionContextValue
+ * @property {string} sessionState
+ * @property {(value: string) => void} setSessionState
+ * @property {{ username: string, role: string, status: string, maxStorageBytes: number | null, emailVerified: boolean | null } | null} sessionUser
+ * @property {(value: object | null) => void} setSessionUser
+ * @property {boolean} authLoading
+ * @property {(value: boolean) => void} setAuthLoading
+ * @property {string} authError
+ * @property {(value: string) => void} setAuthError
+ * @property {boolean} resendLoading
+ * @property {(value: boolean) => void} setResendLoading
+ * @property {object | null} registrationContext
+ * @property {(value: object | null) => void} setRegistrationContext
+ * @property {(payload: object) => void} applySessionUser
+ * @property {() => void} resetAuthState
+ * @property {() => void} handleSwitchToRegister
+ * @property {() => void} handleSwitchToLogin
+ */
 
+const SessionContext = createContext(
+  /** @type {SessionContextValue | null} */ (null)
+);
+
+/**
+ * Provides session/auth state to descendant components.
+ * @param {{ children: import("react").ReactNode }} props
+ * @returns {JSX.Element}
+ */
 export const SessionProvider = ({ children }) => {
   const [sessionState, setSessionState] = useState("checking");
   const [sessionUser, setSessionUser] = useState(null);

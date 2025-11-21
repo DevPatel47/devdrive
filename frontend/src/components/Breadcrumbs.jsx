@@ -4,6 +4,10 @@ import { FiChevronRight } from "react-icons/fi";
 const breadcrumbStyles =
   "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800";
 
+/**
+ * Visual navigation for moving between folder prefixes.
+ * @param {{ prefix?: string, onNavigate: (path: string) => void }} props
+ */
 const Breadcrumbs = ({ prefix = "", onNavigate }) => {
   const segments = prefix.split("/").filter(Boolean);
   const crumbs = segments.map((segment, index) => {

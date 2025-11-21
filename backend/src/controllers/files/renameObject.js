@@ -17,6 +17,10 @@ import {
   deleteObjectByKey,
 } from "../../services/s3Service.js";
 
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 const renameObjectController = async (req, res) => {
   const { key, newName } = req.body || {};
   const folderCandidate = isFolderKey(key);

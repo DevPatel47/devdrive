@@ -2,6 +2,12 @@ import ApiError from "./apiError.js";
 
 const hasUnsafeTraversal = (value) => /\.\./.test(value || "");
 
+/**
+ * Normalizes incoming keys to safe S3-compatible strings.
+ * @param {string | undefined | null} key
+ * @param {{ allowEmpty?: boolean, expectFolder?: boolean }} [options]
+ * @returns {string}
+ */
 export const sanitizeKey = (
   key,
   { allowEmpty = false, expectFolder = false } = {}
@@ -38,6 +44,10 @@ export const sanitizeKey = (
   return normalized;
 };
 
+/**
+ * Validates a single path segment such as a folder or file name.
+ * @param {string} segment
+ */
 export const sanitizeSegment = (segment) => {
   if (typeof segment !== "string") {
     throw new ApiError(400, "Folder or file name must be a string");
@@ -55,12 +65,20 @@ export const sanitizeSegment = (segment) => {
   return trimmed;
 };
 
+/**
+ * Converts optional prefixes into folder-safe keys.
+ * @param {string} [prefix]
+ */
 export const normalizePrefix = (prefix = "") => {
   if (!prefix || !String(prefix).trim()) return "";
   const key = sanitizeKey(prefix, { allowEmpty: true, expectFolder: true });
   return key;
 };
 
+/**
+ * Determines whether a key string represents a folder.
+ * @param {string} [value]
+ */
 export const isFolderKey = (value = "") =>
   String(value || "")
     .trim()

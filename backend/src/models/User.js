@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import config from "../config/env.js";
 import { buildUserRoot } from "../utils/userRoot.js";
 
+/**
+ * Core representation of DevDrive accounts and provisioning metadata.
+ */
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -77,6 +80,10 @@ userSchema.pre("validate", function userSchemaPreValidate(next) {
   next();
 });
 
+/**
+ * Returns a redacted view of the user suitable for client responses.
+ * @returns {{ id: string, username: string, rootPrefix: string, role: string, status: string, maxStorageBytes: number, emailVerified: boolean }}
+ */
 userSchema.methods.toSafeProfile = function toSafeProfile() {
   return {
     id: this._id.toString(),

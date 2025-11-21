@@ -10,6 +10,11 @@ let sendgridReady = false;
 let brevoClient = null;
 let brevoReady = false;
 
+/**
+ * Parses strings like `"Sender" <sender@example.com>` so provider SDKs can use them.
+ * @param {string | undefined} value
+ * @returns {{ email?: string, name?: string }}
+ */
 const parseAddress = (value) => {
   if (!value) return {};
   const trimmed = value.trim();
@@ -21,6 +26,11 @@ const parseAddress = (value) => {
   return { email: trimmed };
 };
 
+/**
+ * Ensures recipients are expressed as a string array.
+ * @param {string | string[] | undefined} value
+ * @returns {string[]}
+ */
 const normalizeRecipients = (value) => {
   if (!value) return [];
   return (Array.isArray(value) ? value : [value]).filter(Boolean);
@@ -75,6 +85,10 @@ if (provider === "smtp" && config.mail.enabled) {
   }
 }
 
+/**
+ * Indicates whether the configured mail transport has finished initializing.
+ * @returns {boolean}
+ */
 const isMailReady = () => {
   if (!config.mail.enabled) return false;
   if (provider === "smtp") return Boolean(transporter);
@@ -83,6 +97,11 @@ const isMailReady = () => {
   return false;
 };
 
+/**
+ * Sends an email using the active provider implementation.
+ * @param {{ to: string | string[], subject: string, text?: string, html?: string }} payload
+ * @returns {Promise<boolean>} True if the provider accepted the message.
+ */
 const sendMail = async ({ to, subject, text, html }) => {
   if (!isMailReady()) {
     logger.info(
@@ -185,6 +204,10 @@ const sendMail = async ({ to, subject, text, html }) => {
   }
 };
 
+/**
+ * Alerts configured admins that a user awaits manual approval.
+ * @param {{ username: string }} payload
+ */
 export const notifyAdminsOfPendingUser = async ({ username }) => {
   if (!config.admin.notificationEmails.length) return;
   const subject = `[DevDrive] Approval needed for ${username}`;
@@ -197,6 +220,10 @@ export const notifyAdminsOfPendingUser = async ({ username }) => {
   });
 };
 
+/**
+ * Notifies an end user that their account is approved.
+ * @param {{ username: string, email?: string }} payload
+ */
 export const notifyUserApproved = async ({ username, email }) => {
   if (!email) return;
   const subject = "Your DevDrive account was approved";
@@ -204,6 +231,10 @@ export const notifyUserApproved = async ({ username, email }) => {
   await sendMail({ to: email, subject, text, html: `<p>${text}</p>` });
 };
 
+/**
+ * Sends a short-lived email verification OTP.
+ * @param {{ username: string, email?: string, code: string }} payload
+ */
 export const sendEmailVerificationCode = async ({ username, email, code }) => {
   if (!email) {
     logger.warn(

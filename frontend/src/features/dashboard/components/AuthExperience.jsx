@@ -1,7 +1,3 @@
-/**
- * Displays every pre-authentication state (login, registration, MFA, approvals)
- * while keeping the main dashboard container lean and presentation-focused.
- */
 import toast from "react-hot-toast";
 import LoginCard from "../../../components/LoginCard";
 import RegisterCard from "../../../components/RegisterCard";
@@ -11,6 +7,11 @@ import MfaCard from "../../../components/MfaCard";
 import HowDevDriveWorksModal from "../../../components/HowDevDriveWorksModal";
 import AppFooter from "../../../components/AppFooter";
 
+/**
+ * Displays every pre-authentication state (login, registration, MFA, approvals)
+ * while keeping the main dashboard container lean and presentation-focused.
+ * @param {object} props
+ */
 const AuthExperience = ({
   sessionState,
   sessionUser,

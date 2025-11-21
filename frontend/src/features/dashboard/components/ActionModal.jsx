@@ -1,6 +1,12 @@
 /**
  * Generic modal for renaming, moving, creating, or deleting S3 objects.
  * Keeps the dashboard container lean by housing the shared presentation logic.
+ * @param {{
+ *  modal: null | { type: "rename" | "move" | "create-folder" | "delete", value?: string },
+ *  onChange: (value: string) => void,
+ *  onClose: () => void,
+ *  onSubmit: () => void,
+ * }} props
  */
 const ActionModal = ({ modal, onChange, onClose, onSubmit }) => {
   if (!modal) return null;

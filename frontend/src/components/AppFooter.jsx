@@ -1,5 +1,6 @@
 /**
  * Reusable footer that links back to the developer portfolio for credibility.
+ * @returns {JSX.Element}
  */
 const AppFooter = () => {
   const year = new Date().getFullYear();

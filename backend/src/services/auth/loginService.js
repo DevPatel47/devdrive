@@ -3,6 +3,11 @@ import ApiError from "../../utils/apiError.js";
 import User from "../../models/User.js";
 import { normalizeEmail, validateCredentials } from "./helpers.js";
 
+/**
+ * Confirms a username/password pair and enforces verification status.
+ * @param {{ username: string, password: string }} payload
+ * @returns {Promise<import("../../models/User.js").default>}
+ */
 export const validateLogin = async ({ username, password }) => {
   validateCredentials({ email: username, password });
   const usernameLower = normalizeEmail(username);
